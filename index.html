@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD_TIMESTAMP: 1787050602.496913 -->
+<!-- BUILD_TIMESTAMP: 1787050740.3667936 -->
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -4730,9 +4730,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 bodyData.set('form-name', 'presentation-comments');
             }
 
-            const targetUrl = window.location.pathname.endsWith('.html') ? window.location.pathname : '/index.html';
-
-            fetch(targetUrl, {
+            fetch('/', {
                 method: 'POST',
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: bodyData.toString()
