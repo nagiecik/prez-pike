@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD_TIMESTAMP: 1787061308.8237333 -->
+<!-- BUILD_TIMESTAMP: 1787061451.499739 -->
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -5229,13 +5229,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    let openPopoverPinId = null;
+    let lastRenderedPinsHash = '';
+
     function renderPinsForSlide(slideIdx) {
         const slide = slides[slideIdx];
         if (!slide) return;
 
-        slide.querySelectorAll('.slide-pin-marker').forEach(el => el.remove());
-
         const pins = loadPins().filter(p => p.slide === (slideIdx + 1));
+        const currentHash = JSON.stringify(pins) + '_' + openPopoverPinId + '_' + slideIdx;
+
+        if (currentHash === lastRenderedPinsHash && slide.querySelector('.slide-pin-marker')) {
+            return;
+        }
+        lastRenderedPinsHash = currentHash;
+
+        slide.querySelectorAll('.slide-pin-marker').forEach(el => el.remove());
 
         pins.forEach((pin, idx) => {
             const pinMarker = document.createElement('div');
@@ -5243,10 +5252,12 @@ document.addEventListener('DOMContentLoaded', () => {
             pinMarker.style.left = `${pin.x}%`;
             pinMarker.style.top = `${pin.y}%`;
 
+            const isOpen = String(openPopoverPinId) === String(pin.id);
+
             pinMarker.innerHTML = `
                 <div class="pin-pulse-ring"></div>
                 <div class="pin-marker-badge">#${idx + 1}</div>
-                <div class="pin-popover-card" style="display: none;">
+                <div class="pin-popover-card" style="display: ${isOpen ? 'block' : 'none'};">
                     <div class="pin-popover-header">
                         <span class="pin-popover-author">${escapeHtml(pin.author || 'Anonim')}</span>
                         <span class="pin-popover-date">${escapeHtml(pin.date || '')}</span>
@@ -5259,19 +5270,30 @@ document.addEventListener('DOMContentLoaded', () => {
             const popover = pinMarker.querySelector('.pin-popover-card');
             const delBtn = pinMarker.querySelector('.pin-popover-del');
 
+            if (popover) {
+                popover.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
+
             pinMarker.addEventListener('click', (e) => {
                 e.stopPropagation();
-                document.querySelectorAll('.pin-popover-card').forEach(p => {
-                    if (p !== popover) p.style.display = 'none';
-                });
-                popover.style.display = (popover.style.display === 'none') ? 'block' : 'none';
+                if (String(openPopoverPinId) === String(pin.id)) {
+                    openPopoverPinId = null;
+                } else {
+                    openPopoverPinId = pin.id;
+                }
+                lastRenderedPinsHash = '';
+                renderPinsForSlide(slideIdx);
             });
 
             if (delBtn) {
                 delBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
+                    openPopoverPinId = null;
                     const updatedPins = loadPins().filter(p => String(p.id) !== String(pin.id));
                     savePins(updatedPins);
+                    lastRenderedPinsHash = '';
                     renderPinsForSlide(slideIdx);
                     savePinsToGithub(updatedPins);
                 });
@@ -5301,7 +5323,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const commentInput = document.getElementById('pinComment');
                 if (commentInput) commentInput.focus();
             } else {
-                document.querySelectorAll('.pin-popover-card').forEach(p => p.style.display = 'none');
+                if (openPopoverPinId !== null) {
+                    openPopoverPinId = null;
+                    lastRenderedPinsHash = '';
+                    renderPinsForSlide(sIdx);
+                }
             }
         });
     });
