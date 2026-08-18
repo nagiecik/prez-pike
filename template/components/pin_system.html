@@ -3,6 +3,9 @@
     <div class="pin-banner-content">
         <i class="fa-solid fa-location-dot pulse-icon"></i>
         <span><strong>TRYB PINEZEK WŁĄCZONY:</strong> Kliknij w dowolne miejsce na slajdzie, aby postawić uwagą.</span>
+        <button class="pin-banner-btn" id="bannerShowDrawerBtn" title="Zobacz wszystkie uwagi">
+            <i class="fa-solid fa-list-check"></i> Lista uwag (<span class="banner-pins-count">0</span>)
+        </button>
         <button class="pin-banner-close" id="closePinModeBtn" title="Zamknij tryb pinezek (Esc / P)">
             <i class="fa-solid fa-xmark"></i> Wyjdź (P / Esc)
         </button>
@@ -41,4 +44,25 @@
     </div>
 </div>
 
+<!-- Boczny Wysuwany Panel Wszystkich Komentarzy (Comments Side Drawer) -->
+<div class="comments-drawer-overlay" id="drawerOverlay" style="display: none;"></div>
+<div class="comments-drawer" id="commentsDrawer">
+    <div class="drawer-header">
+        <div class="drawer-title">
+            <i class="fa-solid fa-list-check"></i>
+            <h3>Wszystkie uwagi</h3>
+            <span class="drawer-counter-badge" id="drawerCount">0</span>
+        </div>
+        <button class="drawer-close-btn" id="closeDrawerBtn" title="Zamknij panel (Esc)">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
 
+    <div class="drawer-content" id="drawerList">
+        <!-- Lista kart komentarzy renderowana dynamicznie -->
+        <div class="drawer-empty-state">
+            <i class="fa-solid fa-comments"></i>
+            <p>Brak dodanych uwag na slajdach.</p>
+        </div>
+    </div>
+</div>

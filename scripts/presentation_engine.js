@@ -565,6 +565,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (commentsDrawer && commentsDrawer.classList.contains('open')) {
+            if (e.key === 'Escape' || e.key === 'l' || e.key === 'L') {
+                toggleCommentsDrawer(false);
+            }
+            return;
+        }
+
         if (commentOverlay && commentOverlay.classList.contains('active')) {
             if (e.key === 'Escape') {
                 toggleCommentModal(false);
@@ -626,6 +633,10 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'p':
             case 'P':
                 togglePinMode();
+                break;
+            case 'l':
+            case 'L':
+                toggleCommentsDrawer();
                 break;
         }
     });
@@ -887,18 +898,21 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const x = parseFloat(pinXInput.value);
             const y = parseFloat(pinYInput.value);
-            const slideNum = parseInt(pinSlideInput.value, 10);
             const author = document.getElementById('pinAuthor').value.trim();
             const text = document.getElementById('pinComment').value.trim();
 
             if (!text) return;
+            const authorVal = author || 'Gość';
+            if (author) {
+                localStorage.setItem('chopin_user_author', author);
+            }
 
             const newPin = {
                 id: String(Date.now()),
                 slide: slideNum,
                 x: x,
                 y: y,
-                author: author || 'Gość',
+                author: authorVal,
                 text: text,
                 date: new Date().toLocaleDateString('pl-PL')
             };
@@ -907,14 +921,129 @@ document.addEventListener('DOMContentLoaded', () => {
             pins.push(newPin);
             savePins(pins);
             renderPinsForSlide(currentSlide);
+            updateCommentsDrawer();
 
             savePinsToGithub(pins);
 
             if (pinModalOverlay) pinModalOverlay.style.display = 'none';
             pinForm.reset();
+            prefillAuthorInput();
             togglePinMode(false);
         });
     }
+
+    // ==========================================================================
+    // SIDE MENU DRAWER & AUTHOR MEMORY LOGIC
+    // ==========================================================================
+    const allCommentsBtn = document.getElementById('allCommentsBtn');
+    const bannerShowDrawerBtn = document.getElementById('bannerShowDrawerBtn');
+    const commentsDrawer = document.getElementById('commentsDrawer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+    const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+    const drawerList = document.getElementById('drawerList');
+    const drawerCount = document.getElementById('drawerCount');
+    const allCommentsBadge = document.getElementById('allCommentsBadge');
+
+    function prefillAuthorInput() {
+        const savedAuthor = localStorage.getItem('chopin_user_author');
+        const authorInput = document.getElementById('pinAuthor');
+        if (savedAuthor && authorInput) {
+            authorInput.value = savedAuthor;
+        }
+    }
+
+    function toggleCommentsDrawer(open) {
+        const isOpen = (typeof open === 'boolean') ? open : !commentsDrawer.classList.contains('open');
+        if (isOpen) {
+            commentsDrawer.classList.add('open');
+            if (drawerOverlay) drawerOverlay.style.display = 'block';
+            updateCommentsDrawer();
+        } else {
+            commentsDrawer.classList.remove('open');
+            if (drawerOverlay) drawerOverlay.style.display = 'none';
+        }
+    }
+
+    function updateCommentsDrawer() {
+        const pins = loadPins();
+        const count = pins.length;
+
+        if (drawerCount) drawerCount.textContent = count;
+        document.querySelectorAll('.banner-pins-count').forEach(el => el.textContent = count);
+
+        if (allCommentsBadge) {
+            if (count > 0) {
+                allCommentsBadge.style.display = 'flex';
+                allCommentsBadge.textContent = count;
+            } else {
+                allCommentsBadge.style.display = 'none';
+            }
+        }
+
+        if (!drawerList) return;
+
+        if (count === 0) {
+            drawerList.innerHTML = `
+                <div class="drawer-empty-state">
+                    <i class="fa-solid fa-comments"></i>
+                    <p>Brak dodanych uwag na slajdach.</p>
+                </div>
+            `;
+            return;
+        }
+
+        drawerList.innerHTML = '';
+        pins.forEach((pin) => {
+            const slideIdx = pin.slide - 1;
+            const slideEl = slides[slideIdx];
+            const slideTitle = slideEl ? (slideEl.getAttribute('data-overview-title') || `Slajd #${pin.slide}`) : `Slajd #${pin.slide}`;
+
+            const card = document.createElement('div');
+            card.className = 'drawer-item-card';
+            card.innerHTML = `
+                <div class="drawer-item-header">
+                    <span class="drawer-item-slide-badge"><i class="fa-solid fa-map-pin"></i> Slajd #${pin.slide}: ${escapeHtml(slideTitle)}</span>
+                    <span class="drawer-item-date">${escapeHtml(pin.date || '')}</span>
+                </div>
+                <div class="drawer-item-author">${escapeHtml(pin.author || 'Gość')}</div>
+                <div class="drawer-item-text">${escapeHtml(pin.text)}</div>
+                <div class="drawer-item-actions">
+                    <button class="drawer-item-del-btn" data-id="${pin.id}"><i class="fa-solid fa-trash"></i> Usuń uwagą</button>
+                </div>
+            `;
+
+            card.addEventListener('click', () => {
+                toggleCommentsDrawer(false);
+                goToSlide(slideIdx);
+                openPopoverPinId = pin.id;
+                lastRenderedPinsHash = '';
+                renderPinsForSlide(slideIdx);
+            });
+
+            const delBtn = card.querySelector('.drawer-item-del-btn');
+            if (delBtn) {
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const updatedPins = loadPins().filter(p => String(p.id) !== String(pin.id));
+                    savePins(updatedPins);
+                    lastRenderedPinsHash = '';
+                    renderPinsForSlide(currentSlide);
+                    updateCommentsDrawer();
+                    savePinsToGithub(updatedPins);
+                });
+            }
+
+            drawerList.appendChild(card);
+        });
+    }
+
+    if (allCommentsBtn) allCommentsBtn.addEventListener('click', () => toggleCommentsDrawer());
+    if (bannerShowDrawerBtn) bannerShowDrawerBtn.addEventListener('click', () => toggleCommentsDrawer(true));
+    if (closeDrawerBtn) closeDrawerBtn.addEventListener('click', () => toggleCommentsDrawer(false));
+    if (drawerOverlay) drawerOverlay.addEventListener('click', () => toggleCommentsDrawer(false));
+
+    prefillAuthorInput();
+    updateCommentsDrawer();
 
     initOverview();
     goToSlide(getSlideFromHash());
