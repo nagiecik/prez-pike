@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD_TIMESTAMP: 1787050484.013254 -->
+<!-- BUILD_TIMESTAMP: 1787050602.496913 -->
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -3264,6 +3264,15 @@ body.light-theme .form-group textarea {
 </head>
 <body>
 
+    <!-- Ukryty formularz statyczny dla bota Netlify Forms -->
+    <form name="presentation-comments" netlify data-netlify="true" hidden action="/index.html">
+        <input type="hidden" name="form-name" value="presentation-comments" />
+        <input type="text" name="author" />
+        <input type="text" name="slide_number" />
+        <input type="text" name="slide_title" />
+        <textarea name="comment"></textarea>
+    </form>
+
     <!-- Pasek postępu -->
     <div class="progress-bar-container">
         <div class="progress-bar" id="progressBar"></div>
@@ -4165,7 +4174,7 @@ body.light-theme .form-group textarea {
             </button>
         </div>
 
-        <form name="presentation-comments" method="POST" netlify data-netlify="true" action="/" id="commentForm" class="comment-form">
+        <form name="presentation-comments" method="POST" netlify data-netlify="true" action="/index.html" id="commentForm" class="comment-form">
             <input type="hidden" name="form-name" value="presentation-comments" />
             <input type="hidden" name="slide_number" id="commentSlideInput" value="1" />
             <input type="hidden" name="slide_title" id="commentSlideTitleInput" value="" />
@@ -4721,7 +4730,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 bodyData.set('form-name', 'presentation-comments');
             }
 
-            fetch('/', {
+            const targetUrl = window.location.pathname.endsWith('.html') ? window.location.pathname : '/index.html';
+
+            fetch(targetUrl, {
                 method: 'POST',
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: bodyData.toString()
@@ -4735,13 +4746,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         commentSuccessMsg.style.display = 'flex';
                     }
                 } else {
-                    // Jeśli fetch nie przeszedł, użyj natywnego wysłania formularza Netlify
-                    commentForm.submit();
+                    console.error('Błąd odpowiedzi Netlify:', res.status);
+                    alert('Błąd serwera Netlify (' + res.status + '). Upewnij się, że wgrałeś aktualną wersję z ukrytym formularzem.');
                 }
             })
             .catch((err) => {
-                console.warn('AJAX fetch error, falling back to native submit:', err);
-                commentForm.submit();
+                console.error('Błąd wysyłania komentarza:', err);
+                alert('Błąd sieci podczas wysyłania komentarza. Spróbuj ponownie.');
             })
             .finally(() => {
                 if (submitBtn) {
