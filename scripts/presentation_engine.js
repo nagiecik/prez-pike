@@ -799,7 +799,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function fetchRemotePins() {
         if (isSaving) return;
-        fetch(GH_PIN_URL, {
+        fetch(GH_PIN_URL + '?t=' + Date.now(), {
             headers: {
                 'Authorization': `token ${GH_TOKEN}`,
                 'Accept': 'application/vnd.github+json'
@@ -849,12 +849,12 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(err => console.error('[Pins] Sync error:', err))
         .finally(() => {
             isSaving = false;
-            fetchRemotePins();
+            setTimeout(fetchRemotePins, 300);
         });
     }
 
     fetchRemotePins();
-    setInterval(fetchRemotePins, 3000);
+    setInterval(fetchRemotePins, 1500);
 
     if (pinForm) {
         pinForm.addEventListener('submit', (e) => {
