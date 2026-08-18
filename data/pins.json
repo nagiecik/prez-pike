@@ -7,5 +7,14 @@
     "author": "test",
     "text": "abc",
     "date": "18.08.2026"
+  },
+  {
+    "id": "1787067423120",
+    "slide": 1,
+    "x": 15.63,
+    "y": 27.78,
+    "author": "Jan Kowalski",
+    "text": "Komentarz Jana",
+    "date": "18.08.2026"
   }
 ]
