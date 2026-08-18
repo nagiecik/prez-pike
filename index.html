@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD_TIMESTAMP: 1787050278.945125 -->
+<!-- BUILD_TIMESTAMP: 1787050484.013254 -->
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -4165,7 +4165,7 @@ body.light-theme .form-group textarea {
             </button>
         </div>
 
-        <form name="presentation-comments" method="POST" data-netlify="true" id="commentForm" class="comment-form">
+        <form name="presentation-comments" method="POST" netlify data-netlify="true" action="/" id="commentForm" class="comment-form">
             <input type="hidden" name="form-name" value="presentation-comments" />
             <input type="hidden" name="slide_number" id="commentSlideInput" value="1" />
             <input type="hidden" name="slide_title" id="commentSlideTitleInput" value="" />
@@ -4716,22 +4716,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            const bodyData = new URLSearchParams(formData);
+            if (!bodyData.get('form-name')) {
+                bodyData.set('form-name', 'presentation-comments');
+            }
+
             fetch('/', {
                 method: 'POST',
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: new URLSearchParams(formData).toString()
+                body: bodyData.toString()
             })
             .then((res) => {
                 if (res.ok || res.status < 400) {
                     if (commentForm) commentForm.style.display = 'none';
-                    if (commentSuccessMsg) commentSuccessMsg.style.display = 'flex';
+                    if (commentSuccessMsg) {
+                        const note = commentSuccessMsg.querySelector('.local-demo-note');
+                        if (note) note.remove();
+                        commentSuccessMsg.style.display = 'flex';
+                    }
                 } else {
-                    throw new Error('Netlify HTTP status: ' + res.status);
+                    // Jeśli fetch nie przeszedł, użyj natywnego wysłania formularza Netlify
+                    commentForm.submit();
                 }
             })
             .catch((err) => {
-                console.error('Błąd wysyłania komentarza:', err);
-                alert('Wystąpił błąd podczas wysyłania komentarza. Upewnij się, że strona jest opublikowana na Netlify.');
+                console.warn('AJAX fetch error, falling back to native submit:', err);
+                commentForm.submit();
             })
             .finally(() => {
                 if (submitBtn) {
