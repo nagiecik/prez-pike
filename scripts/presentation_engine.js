@@ -276,6 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         history.replaceState(null, null, `#${currentSlide + 1}`);
         updateOverviewCards();
+        if (typeof renderPinsForSlide === 'function') renderPinsForSlide(currentSlide);
     }
 
     function nextSlide() {
@@ -551,6 +552,19 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     document.addEventListener('keydown', (e) => {
+        if (pinModalOverlay && pinModalOverlay.style.display === 'flex') {
+            if (e.key === 'Escape') {
+                pinModalOverlay.style.display = 'none';
+                togglePinMode(false);
+            }
+            return;
+        }
+
+        if (isPinMode && e.key === 'Escape') {
+            togglePinMode(false);
+            return;
+        }
+
         if (commentOverlay && commentOverlay.classList.contains('active')) {
             if (e.key === 'Escape') {
                 toggleCommentModal(false);
@@ -609,6 +623,10 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'C':
                 toggleCommentModal(true);
                 break;
+            case 'p':
+            case 'P':
+                togglePinMode();
+                break;
         }
     });
 
@@ -633,6 +651,178 @@ document.addEventListener('DOMContentLoaded', () => {
                 prevSlide();
             }
         }
+    }
+
+    // ==========================================================================
+    // SYSTEM WIZUALNYCH PINEZEK Z KOMENTARZAMI (VISUAL SLIDE PINS)
+    // ==========================================================================
+    let isPinMode = false;
+
+    const pinBtn = document.getElementById('pinBtn');
+    const pinModeBanner = document.getElementById('pinModeBanner');
+    const closePinModeBtn = document.getElementById('closePinModeBtn');
+    const pinModalOverlay = document.getElementById('pinModalOverlay');
+    const pinForm = document.getElementById('pinForm');
+    const pinXInput = document.getElementById('pinXInput');
+    const pinYInput = document.getElementById('pinYInput');
+    const pinSlideInput = document.getElementById('pinSlideInput');
+    const pinSlideBadge = document.getElementById('pinSlideBadge');
+    const cancelPinBtn = document.getElementById('cancelPinBtn');
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
+
+    function loadPins() {
+        try {
+            const data = localStorage.getItem('chopin_visual_pins');
+            return data ? JSON.parse(data) : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function savePins(pins) {
+        try {
+            localStorage.setItem('chopin_visual_pins', JSON.stringify(pins));
+        } catch (e) {}
+    }
+
+    function togglePinMode(enable) {
+        isPinMode = (typeof enable === 'boolean') ? enable : !isPinMode;
+        if (isPinMode) {
+            document.body.classList.add('pin-mode-active');
+            if (pinModeBanner) pinModeBanner.style.display = 'block';
+            if (pinBtn) pinBtn.classList.add('pin-active');
+        } else {
+            document.body.classList.remove('pin-mode-active');
+            if (pinModeBanner) pinModeBanner.style.display = 'none';
+            if (pinBtn) pinBtn.classList.remove('pin-active');
+        }
+    }
+
+    function renderPinsForSlide(slideIdx) {
+        const slide = slides[slideIdx];
+        if (!slide) return;
+
+        slide.querySelectorAll('.slide-pin-marker').forEach(el => el.remove());
+
+        const pins = loadPins().filter(p => p.slide === (slideIdx + 1));
+
+        pins.forEach((pin, idx) => {
+            const pinMarker = document.createElement('div');
+            pinMarker.className = 'slide-pin-marker';
+            pinMarker.style.left = `${pin.x}%`;
+            pinMarker.style.top = `${pin.y}%`;
+
+            pinMarker.innerHTML = `
+                <div class="pin-pulse-ring"></div>
+                <div class="pin-marker-badge">#${idx + 1}</div>
+                <div class="pin-popover-card" style="display: none;">
+                    <div class="pin-popover-header">
+                        <span class="pin-popover-author">${escapeHtml(pin.author || 'Anonim')}</span>
+                        <span class="pin-popover-date">${escapeHtml(pin.date || '')}</span>
+                    </div>
+                    <div class="pin-popover-text">${escapeHtml(pin.text)}</div>
+                    <button class="pin-popover-del" data-id="${pin.id}"><i class="fa-solid fa-trash"></i> Usuń pinezkę</button>
+                </div>
+            `;
+
+            const popover = pinMarker.querySelector('.pin-popover-card');
+            const delBtn = pinMarker.querySelector('.pin-popover-del');
+
+            pinMarker.addEventListener('click', (e) => {
+                e.stopPropagation();
+                document.querySelectorAll('.pin-popover-card').forEach(p => {
+                    if (p !== popover) p.style.display = 'none';
+                });
+                popover.style.display = (popover.style.display === 'none') ? 'block' : 'none';
+            });
+
+            if (delBtn) {
+                delBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    let allPins = loadPins();
+                    allPins = allPins.filter(p => p.id !== pin.id);
+                    savePins(allPins);
+                    renderPinsForSlide(slideIdx);
+                });
+            }
+
+            slide.appendChild(pinMarker);
+        });
+    }
+
+    slides.forEach((slide, sIdx) => {
+        slide.addEventListener('click', (e) => {
+            if (e.target.closest('.slide-pin-marker') || e.target.closest('.pin-popover-card')) return;
+
+            if (isPinMode) {
+                const rect = slide.getBoundingClientRect();
+                const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
+                const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
+
+                if (pinXInput) pinXInput.value = xPercent.toFixed(2);
+                if (pinYInput) pinYInput.value = yPercent.toFixed(2);
+                if (pinSlideInput) pinSlideInput.value = sIdx + 1;
+                
+                const title = slide.getAttribute('data-overview-title') || `Slajd #${sIdx + 1}`;
+                if (pinSlideBadge) pinSlideBadge.textContent = `Slajd #${sIdx + 1}: ${title}`;
+
+                if (pinModalOverlay) pinModalOverlay.style.display = 'flex';
+                const commentInput = document.getElementById('pinComment');
+                if (commentInput) commentInput.focus();
+            } else {
+                document.querySelectorAll('.pin-popover-card').forEach(p => p.style.display = 'none');
+            }
+        });
+    });
+
+    if (pinBtn) pinBtn.addEventListener('click', () => togglePinMode());
+    if (closePinModeBtn) closePinModeBtn.addEventListener('click', () => togglePinMode(false));
+    if (cancelPinBtn) {
+        cancelPinBtn.addEventListener('click', () => {
+            if (pinModalOverlay) pinModalOverlay.style.display = 'none';
+        });
+    }
+
+    if (pinForm) {
+        pinForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const x = parseFloat(pinXInput.value);
+            const y = parseFloat(pinYInput.value);
+            const slideNum = parseInt(pinSlideInput.value, 10);
+            const author = document.getElementById('pinAuthor').value.trim();
+            const text = document.getElementById('pinComment').value.trim();
+
+            if (!text) return;
+
+            const newPin = {
+                id: Date.now(),
+                slide: slideNum,
+                x: x,
+                y: y,
+                author: author || 'Gość',
+                text: text,
+                date: new Date().toLocaleDateString('pl-PL')
+            };
+
+            const pins = loadPins();
+            pins.push(newPin);
+            savePins(pins);
+
+            renderPinsForSlide(currentSlide);
+
+            if (pinModalOverlay) pinModalOverlay.style.display = 'none';
+            pinForm.reset();
+            togglePinMode(false);
+        });
     }
 
     initOverview();

@@ -61,6 +61,7 @@ def compile_presentation():
     controls_comp = render_components(components.get("controls", ""))
     overview_comp = render_components(components.get("overview_modal", ""))
     comment_comp = render_components(components.get("comment_modal", ""))
+    pin_comp = render_components(components.get("pin_system", ""))
 
     slide_files = sorted(glob.glob(os.path.join(base_dir, "slides", "slide_*.html")))
     slides_html_list = []
@@ -134,6 +135,9 @@ def compile_presentation():
 
     <!-- Modal Komentarzy -->
 {comment_comp}
+
+    <!-- System Visualnych Pinezek -->
+{pin_comp}
 
     <!-- Logika Prezentacji Interaktywnej oraz Live Reload -->
     <script>

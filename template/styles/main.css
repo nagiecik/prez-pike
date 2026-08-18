@@ -1,5 +1,10 @@
 /* Główny arkusz stylów prezentacji CHOPIN */
 :root {
+    /* Automatyczne Zmienne z Figmy */
+    --color-white: #ffffff;
+    --color-crimson-red: #b71818;
+    --color-charcoal: #1e1e1e;
+
     --bg-dark: #0D0D0D; /* Czarny matowy background */
     --bg-card: #171717; /* Eleganckie ciemne karty */
     --accent-cyan: #FE0467; /* Brandowy róż Chopin */
@@ -3234,6 +3239,252 @@ body.light-theme .form-group textarea {
     .comment-overlay {
         display: none !important;
     }
+}
+
+/* ==========================================================================
+   SYSTEM WIZUALNYCH PINEZEK Z KOMENTARZAMI (INTERACTIVE SLIDE PINS)
+   ========================================================================== */
+
+/* Tryb stawiania pinezki (Celownik) */
+body.pin-mode-active .slide-container {
+    cursor: crosshair !important;
+}
+
+body.pin-mode-active .slide-container * {
+    cursor: crosshair !important;
+}
+
+/* Baner informacyjny trybu pinezek */
+.pin-mode-banner {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10005;
+    background: rgba(23, 23, 23, 0.92);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--accent-pink);
+    box-shadow: 0 10px 30px rgba(254, 4, 103, 0.35);
+    border-radius: 50px;
+    padding: 10px 24px;
+    color: var(--text-main);
+    font-size: 0.95rem;
+    font-weight: 500;
+    animation: fadeInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pin-banner-content {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.pin-banner-content .pulse-icon {
+    color: var(--accent-pink);
+    font-size: 1.2rem;
+    animation: pulseGlow 1.5s infinite alternate;
+}
+
+.pin-banner-close {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+}
+
+.pin-banner-close:hover {
+    background: rgba(254, 4, 103, 0.3);
+    border-color: var(--accent-pink);
+}
+
+/* Przycisk aktywacji w dolnym barze gdy aktywny */
+.ctrl-btn.pin-active {
+    background: rgba(254, 4, 103, 0.3) !important;
+    color: var(--accent-pink) !important;
+    border-color: var(--accent-pink) !important;
+    box-shadow: 0 0 15px rgba(254, 4, 103, 0.4);
+}
+
+/* Świecąca Pinezka na Slajdzie */
+.slide-pin-marker {
+    position: absolute;
+    z-index: 100;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.slide-pin-marker:hover {
+    transform: translate(-50%, -50%) scale(1.25);
+    z-index: 105;
+}
+
+.pin-marker-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #FE0467 0%, #B90045 100%);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(254, 4, 103, 0.6);
+    border: 2px solid #ffffff;
+    position: relative;
+}
+
+.pin-pulse-ring {
+    position: absolute;
+    top: -6px;
+    left: -6px;
+    right: -6px;
+    bottom: -6px;
+    border-radius: 50%;
+    border: 2px solid var(--accent-pink);
+    animation: pinPulseRing 2s infinite;
+    pointer-events: none;
+}
+
+@keyframes pinPulseRing {
+    0% { transform: scale(0.8); opacity: 1; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+/* Popover z treścią komentarza po kliknięciu pinezki */
+.pin-popover-card {
+    position: absolute;
+    bottom: 45px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 280px;
+    background: rgba(23, 23, 23, 0.95);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow-card);
+    border-radius: 14px;
+    padding: 14px;
+    color: var(--text-main);
+    z-index: 200;
+    animation: fadeInUp 0.2s ease-out;
+    cursor: default;
+}
+
+.pin-popover-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.pin-popover-author {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--accent-pink);
+}
+
+.pin-popover-date {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.pin-popover-text {
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: #f1f5f9;
+    word-break: break-word;
+}
+
+.pin-popover-del {
+    background: none;
+    border: none;
+    color: #ef4444;
+    font-size: 0.75rem;
+    cursor: pointer;
+    margin-top: 8px;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.pin-popover-del:hover {
+    opacity: 1;
+}
+
+/* Modal Tworzenia Pinezki */
+.pin-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 10010;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.pin-modal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--box-shadow-card);
+    border-radius: 16px;
+    width: 90%;
+    max-width: 440px;
+    padding: 24px;
+    color: var(--text-main);
+}
+
+.pin-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+}
+
+.pin-modal-header h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pin-modal-header h3 i {
+    color: var(--accent-pink);
+}
+
+.pin-modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.submit-pin-btn {
+    background: linear-gradient(135deg, var(--accent-pink) 0%, #B90045 100%);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.submit-pin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(254, 4, 103, 0.4);
 }
 
 

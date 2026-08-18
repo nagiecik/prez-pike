@@ -1,0 +1,42 @@
+<!-- Baner Informacyjny Trybu Pinezki -->
+<div class="pin-mode-banner" id="pinModeBanner" style="display: none;">
+    <div class="pin-banner-content">
+        <i class="fa-solid fa-location-dot pulse-icon"></i>
+        <span><strong>TRYB PINEZEK WŁĄCZONY:</strong> Kliknij w dowolne miejsce na slajdzie, aby postawić uwagą.</span>
+        <button class="pin-banner-close" id="closePinModeBtn" title="Zamknij tryb pinezek (Esc / P)">
+            <i class="fa-solid fa-xmark"></i> Wyjdź (P / Esc)
+        </button>
+    </div>
+</div>
+
+<!-- Modal Dodawania nowej Pinezki -->
+<div class="pin-modal-overlay" id="pinModalOverlay" style="display: none;">
+    <div class="pin-modal-card">
+        <div class="pin-modal-header">
+            <h3><i class="fa-solid fa-location-dot"></i> Nowa pinezka na slajdzie</h3>
+            <span class="slide-badge" id="pinSlideBadge">Slajd #1</span>
+        </div>
+        <form id="pinForm" class="pin-form">
+            <input type="hidden" id="pinXInput" name="x" />
+            <input type="hidden" id="pinYInput" name="y" />
+            <input type="hidden" id="pinSlideInput" name="slide" />
+
+            <div class="form-group">
+                <label for="pinAuthor">Twoje imię lub e-mail (opcjonalnie):</label>
+                <input type="text" id="pinAuthor" name="author" placeholder="np. Anna / anna@firma.pl" autocomplete="off" />
+            </div>
+
+            <div class="form-group">
+                <label for="pinComment">Treść uwagi w tym miejscu:</label>
+                <textarea id="pinComment" name="comment" rows="3" placeholder="Wpisz uwagą przypisaną do tego punktu..." required></textarea>
+            </div>
+
+            <div class="pin-modal-actions">
+                <button type="button" class="btn-cancel" id="cancelPinBtn">Anuluj</button>
+                <button type="submit" class="submit-pin-btn" id="submitPinBtn">
+                    <i class="fa-solid fa-check"></i> Postaw pinezkę
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
