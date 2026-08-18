@@ -721,6 +721,43 @@ document.addEventListener('DOMContentLoaded', () => {
     let openPopoverPinId = null;
     let lastRenderedPinsHash = '';
 
+    function getPinStyleInfo(author) {
+        const trimmed = (author || '').trim();
+        const isAnon = !trimmed || trimmed === 'Gość' || trimmed === 'Anonim';
+        
+        if (isAnon) {
+            return {
+                initial: 'A',
+                gradient: 'linear-gradient(135deg, #64748B 0%, #334155 100%)',
+                pulseColor: 'rgba(100, 116, 139, 0.6)'
+            };
+        }
+
+        const firstChar = trimmed.charAt(0).toUpperCase();
+        const gradients = [
+            { g: 'linear-gradient(135deg, #FE0467 0%, #B90045 100%)', p: 'rgba(254, 4, 103, 0.6)' },
+            { g: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)', p: 'rgba(59, 130, 246, 0.6)' },
+            { g: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)', p: 'rgba(139, 92, 246, 0.6)' },
+            { g: 'linear-gradient(135deg, #10B981 0%, #047857 100%)', p: 'rgba(16, 185, 129, 0.6)' },
+            { g: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', p: 'rgba(245, 158, 11, 0.6)' },
+            { g: 'linear-gradient(135deg, #06B6D4 0%, #0E7490 100%)', p: 'rgba(6, 182, 212, 0.6)' },
+            { g: 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)', p: 'rgba(236, 72, 153, 0.6)' },
+            { g: 'linear-gradient(135deg, #F97316 0%, #C2410C 100%)', p: 'rgba(249, 115, 22, 0.6)' }
+        ];
+
+        let charCodeSum = 0;
+        for (let i = 0; i < trimmed.length; i++) {
+            charCodeSum += trimmed.charCodeAt(i);
+        }
+        const selected = gradients[charCodeSum % gradients.length];
+
+        return {
+            initial: firstChar,
+            gradient: selected.g,
+            pulseColor: selected.p
+        };
+    }
+
     function renderPinsForSlide(slideIdx) {
         const slide = slides[slideIdx];
         if (!slide) return;
@@ -742,17 +779,21 @@ document.addEventListener('DOMContentLoaded', () => {
             pinMarker.style.top = `${pin.y}%`;
 
             const isOpen = String(openPopoverPinId) === String(pin.id);
+            const styleInfo = getPinStyleInfo(pin.author);
 
             pinMarker.innerHTML = `
-                <div class="pin-pulse-ring"></div>
-                <div class="pin-marker-badge">#${idx + 1}</div>
+                <div class="pin-pulse-ring" style="border-color: ${styleInfo.pulseColor};"></div>
+                <div class="pin-marker-badge" style="background: ${styleInfo.gradient};">
+                    <span class="pin-initial">${styleInfo.initial}</span>
+                    <span class="pin-number-tag">#${idx + 1}</span>
+                </div>
                 <div class="pin-popover-card" style="display: ${isOpen ? 'block' : 'none'};">
                     <div class="pin-popover-header">
                         <span class="pin-popover-author">${escapeHtml(pin.author || 'Anonim')}</span>
                         <span class="pin-popover-date">${escapeHtml(pin.date || '')}</span>
                     </div>
                     <div class="pin-popover-text">${escapeHtml(pin.text)}</div>
-                    <button class="pin-popover-del" data-id="${pin.id}"><i class="fa-solid fa-trash"></i> Usuń pinezkę</button>
+                    <button class="pin-popover-del" data-id="${pin.id}"><i class="fa-solid fa-trash"></i> Usuń komentarz</button>
                 </div>
             `;
 
@@ -898,6 +939,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const x = parseFloat(pinXInput.value);
             const y = parseFloat(pinYInput.value);
+            const slideNum = parseInt(pinSlideInput.value, 10);
             const author = document.getElementById('pinAuthor').value.trim();
             const text = document.getElementById('pinComment').value.trim();
 
@@ -986,29 +1028,36 @@ document.addEventListener('DOMContentLoaded', () => {
             drawerList.innerHTML = `
                 <div class="drawer-empty-state">
                     <i class="fa-solid fa-comments"></i>
-                    <p>Brak dodanych uwag na slajdach.</p>
+                    <p>Brak dodanych komentarzy na slajdach.</p>
                 </div>
             `;
             return;
         }
 
         drawerList.innerHTML = '';
-        pins.forEach((pin) => {
+        pins.forEach((pin, pinIdx) => {
             const slideIdx = pin.slide - 1;
             const slideEl = slides[slideIdx];
             const slideTitle = slideEl ? (slideEl.getAttribute('data-overview-title') || `Slajd #${pin.slide}`) : `Slajd #${pin.slide}`;
+            const styleInfo = getPinStyleInfo(pin.author);
 
             const card = document.createElement('div');
             card.className = 'drawer-item-card';
             card.innerHTML = `
-                <div class="drawer-item-header">
-                    <span class="drawer-item-slide-badge"><i class="fa-solid fa-map-pin"></i> Slajd #${pin.slide}: ${escapeHtml(slideTitle)}</span>
+                <div class="drawer-item-top-row">
+                    <span class="drawer-item-num-badge">#${pinIdx + 1}</span>
                     <span class="drawer-item-date">${escapeHtml(pin.date || '')}</span>
                 </div>
-                <div class="drawer-item-author">${escapeHtml(pin.author || 'Gość')}</div>
+                <div class="drawer-item-slide-row">
+                    <span class="drawer-item-slide-badge"><i class="fa-solid fa-map-pin"></i> Slajd #${pin.slide}: ${escapeHtml(slideTitle)}</span>
+                </div>
+                <div class="drawer-item-author-row">
+                    <div class="drawer-author-avatar" style="background: ${styleInfo.gradient};">${styleInfo.initial}</div>
+                    <div class="drawer-item-author">${escapeHtml(pin.author || 'Anonim')}</div>
+                </div>
                 <div class="drawer-item-text">${escapeHtml(pin.text)}</div>
                 <div class="drawer-item-actions">
-                    <button class="drawer-item-del-btn" data-id="${pin.id}"><i class="fa-solid fa-trash"></i> Usuń uwagą</button>
+                    <button class="drawer-item-del-btn" data-id="${pin.id}"><i class="fa-solid fa-trash"></i> Usuń komentarz</button>
                 </div>
             `;
 

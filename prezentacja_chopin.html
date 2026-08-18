@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD_TIMESTAMP: 1787066499.721725 -->
+<!-- BUILD_TIMESTAMP: 1787067778.7907681 -->
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -3275,39 +3275,61 @@ body.pin-mode-active .slide-container * {
     left: 50%;
     transform: translateX(-50%);
     z-index: 10005;
-    background: rgba(23, 23, 23, 0.92);
+    background: rgba(23, 23, 23, 0.95);
     backdrop-filter: blur(16px);
     border: 1px solid var(--accent-pink);
     box-shadow: 0 10px 30px rgba(254, 4, 103, 0.35);
     border-radius: 50px;
-    padding: 10px 24px;
+    padding: 8px 20px;
     color: var(--text-main);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 500;
     animation: fadeInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    max-width: 95vw;
+    width: max-content;
+    box-sizing: border-box;
 }
 
 .pin-banner-content {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
+    white-space: nowrap;
+}
+
+.pin-banner-content span {
+    white-space: nowrap;
 }
 
 .pin-banner-content .pulse-icon {
     color: var(--accent-pink);
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     animation: pulseGlow 1.5s infinite alternate;
+    flex-shrink: 0;
+}
+
+.pin-banner-btn,
+.pin-banner-close {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    line-height: 1;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
 }
 
 .pin-banner-close {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #fff;
-    padding: 6px 14px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: all 0.2s ease;
 }
 
 .pin-banner-close:hover {
@@ -3339,19 +3361,39 @@ body.pin-mode-active .slide-container * {
 }
 
 .pin-marker-badge {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #FE0467 0%, #B90045 100%);
     color: #ffffff;
     font-weight: 700;
-    font-size: 0.85rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 15px rgba(254, 4, 103, 0.6);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
     border: 2px solid #ffffff;
     position: relative;
+}
+
+.pin-initial {
+    font-size: 1.05rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    line-height: 1;
+}
+
+.pin-number-tag {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #0f172a;
+    color: #ffffff;
+    border: 1.5px solid #ffffff;
+    font-size: 0.65rem;
+    font-weight: 800;
+    padding: 1px 4px;
+    border-radius: 8px;
+    line-height: 1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
 }
 
 .pin-pulse-ring {
@@ -3460,41 +3502,77 @@ body.pin-mode-active .slide-container * {
 
 .pin-modal-header {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 18px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 20px;
 }
 
 .pin-modal-header h3 {
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--text-main);
     display: flex;
     align-items: center;
     gap: 8px;
+    margin: 0;
 }
 
 .pin-modal-header h3 i {
     color: var(--accent-pink);
 }
 
+.slide-badge {
+    background: rgba(254, 4, 103, 0.15);
+    color: var(--accent-pink);
+    border: 1px solid rgba(254, 4, 103, 0.35);
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-block;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
 .pin-modal-actions {
     display: flex;
-    justify-content: flex-end;
     gap: 12px;
-    margin-top: 18px;
+    margin-top: 20px;
+    width: 100%;
+}
+
+.pin-modal-actions .btn-cancel,
+.pin-modal-actions .submit-pin-btn {
+    flex: 1;
+    text-align: center;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.pin-modal-actions .btn-cancel {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: var(--text-main);
+}
+
+.pin-modal-actions .btn-cancel:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.25);
 }
 
 .submit-pin-btn {
     background: linear-gradient(135deg, var(--accent-pink) 0%, #B90045 100%);
     color: #fff;
     border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
 }
 .submit-pin-btn:hover {
     transform: translateY(-2px);
@@ -3560,7 +3638,7 @@ body.pin-mode-active .slide-container * {
     top: 0;
     right: 0;
     bottom: 0;
-    width: 380px;
+    width: 570px;
     max-width: 90vw;
     background: rgba(18, 18, 18, 0.96);
     backdrop-filter: blur(20px);
@@ -3658,76 +3736,114 @@ body.pin-mode-active .slide-container * {
 .drawer-item-card {
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 12px;
-    padding: 14px 16px;
+    border-radius: 14px;
+    padding: 18px;
     cursor: pointer;
     transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .drawer-item-card:hover {
     background: rgba(254, 4, 103, 0.08);
     border-color: rgba(254, 4, 103, 0.4);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 
-.drawer-item-header {
+.drawer-item-top-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 6px;
+}
+
+.drawer-item-num-badge {
+    background: var(--accent-pink);
+    color: #ffffff;
+    font-size: 0.78rem;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    line-height: 1;
+}
+
+.drawer-item-date {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.drawer-item-slide-row {
+    display: flex;
 }
 
 .drawer-item-slide-badge {
-    background: linear-gradient(135deg, var(--accent-pink) 0%, #B90045 100%);
-    color: #fff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    padding: 3px 8px;
+    background: rgba(254, 4, 103, 0.15);
+    border: 1px solid rgba(254, 4, 103, 0.35);
+    color: var(--accent-pink);
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 5px 12px;
     border-radius: 6px;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.drawer-item-author-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.drawer-author-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    color: #fff;
+    font-weight: 800;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid rgba(255, 255, 255, 0.4);
+    flex-shrink: 0;
 }
 
 .drawer-item-author {
     font-weight: 700;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     color: var(--text-main);
 }
 
-.drawer-item-date {
-    font-size: 0.75rem;
-    color: var(--text-muted);
-}
-
 .drawer-item-text {
-    font-size: 0.88rem;
-    line-height: 1.45;
-    color: #cbd5e1;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: #e2e8f0;
     word-break: break-word;
-    margin-top: 6px;
 }
 
 .drawer-item-actions {
     display: flex;
     justify-content: flex-end;
-    margin-top: 10px;
-    padding-top: 8px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: 4px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .drawer-item-del-btn {
     background: none;
     border: none;
     color: #ef4444;
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     cursor: pointer;
     display: flex;
     align-items: center;
-    gap: 4px;
-    opacity: 0.7;
+    gap: 6px;
+    opacity: 0.75;
     transition: opacity 0.2s;
 }
 
@@ -4633,7 +4749,7 @@ body.pin-mode-active .slide-container * {
     <button class="ctrl-btn" id="overviewBtn" title="Przegląd slajdów (O)">
         <i class="fa-solid fa-grip"></i>
     </button>
-    <button class="ctrl-btn" id="pinBtn" title="Postaw pinezkę z komentarzem (P)">
+    <button class="ctrl-btn" id="pinBtn" title="Dodaj komentarz do slajdu (P)">
         <i class="fa-solid fa-location-dot"></i>
     </button>
     <button class="ctrl-btn" id="allCommentsBtn" title="Lista wszystkich uwag (L)">
@@ -4701,15 +4817,15 @@ body.pin-mode-active .slide-container * {
 
 
     <!-- System Visualnych Pinezek -->
-<!-- Baner Informacyjny Trybu Pinezki -->
+<!-- Baner Informacyjny Trybu Komentarzy -->
 <div class="pin-mode-banner" id="pinModeBanner" style="display: none;">
     <div class="pin-banner-content">
         <i class="fa-solid fa-location-dot pulse-icon"></i>
-        <span><strong>TRYB PINEZEK WŁĄCZONY:</strong> Kliknij w dowolne miejsce na slajdzie, aby postawić uwagą.</span>
-        <button class="pin-banner-btn" id="bannerShowDrawerBtn" title="Zobacz wszystkie uwagi">
-            <i class="fa-solid fa-list-check"></i> Lista uwag (<span class="banner-pins-count">0</span>)
+        <span><strong>TRYB KOMENTARZY WŁĄCZONY:</strong> Kliknij w dowolne miejsce na slajdzie, aby dodać komentarz.</span>
+        <button class="pin-banner-btn" id="bannerShowDrawerBtn" title="Zobacz wszystkie komentarze">
+            <i class="fa-solid fa-list-check"></i> Lista komentarzy (<span class="banner-pins-count">0</span>)
         </button>
-        <button class="pin-banner-close" id="closePinModeBtn" title="Zamknij tryb pinezek (Esc / P)">
+        <button class="pin-banner-close" id="closePinModeBtn" title="Zamknij tryb komentarzy (Esc / P)">
             <i class="fa-solid fa-xmark"></i> Wyjdź (P / Esc)
         </button>
     </div>
@@ -4719,7 +4835,7 @@ body.pin-mode-active .slide-container * {
 <div class="pin-modal-overlay" id="pinModalOverlay" style="display: none;">
     <div class="pin-modal-card">
         <div class="pin-modal-header">
-            <h3><i class="fa-solid fa-location-dot"></i> Nowa pinezka na slajdzie</h3>
+            <h3><i class="fa-solid fa-location-dot"></i> Nowy komentarz na slajdzie</h3>
             <span class="slide-badge" id="pinSlideBadge">Slajd #1</span>
         </div>
         <form id="pinForm" class="pin-form">
@@ -4733,15 +4849,13 @@ body.pin-mode-active .slide-container * {
             </div>
 
             <div class="form-group">
-                <label for="pinComment">Treść uwagi w tym miejscu:</label>
-                <textarea id="pinComment" name="comment" rows="3" placeholder="Wpisz uwagą przypisaną do tego punktu..." required></textarea>
+                <label for="pinComment">Treść komentarza w tym miejscu:</label>
+                <textarea id="pinComment" name="comment" rows="3" placeholder="Wpisz treść komentarza..." required></textarea>
             </div>
 
             <div class="pin-modal-actions">
                 <button type="button" class="btn-cancel" id="cancelPinBtn">Anuluj</button>
-                <button type="submit" class="submit-pin-btn" id="submitPinBtn">
-                    <i class="fa-solid fa-check"></i> Postaw pinezkę
-                </button>
+                <button type="submit" class="submit-pin-btn" id="submitPinBtn">Dodaj komentarz</button>
             </div>
         </form>
     </div>
@@ -4753,7 +4867,7 @@ body.pin-mode-active .slide-container * {
     <div class="drawer-header">
         <div class="drawer-title">
             <i class="fa-solid fa-list-check"></i>
-            <h3>Wszystkie uwagi</h3>
+            <h3>Wszystkie komentarze</h3>
             <span class="drawer-counter-badge" id="drawerCount">0</span>
         </div>
         <button class="drawer-close-btn" id="closeDrawerBtn" title="Zamknij panel (Esc)">
@@ -4765,7 +4879,7 @@ body.pin-mode-active .slide-container * {
         <!-- Lista kart komentarzy renderowana dynamicznie -->
         <div class="drawer-empty-state">
             <i class="fa-solid fa-comments"></i>
-            <p>Brak dodanych uwag na slajdach.</p>
+            <p>Brak dodanych komentarzy na slajdach.</p>
         </div>
     </div>
 </div>
@@ -5496,6 +5610,43 @@ document.addEventListener('DOMContentLoaded', () => {
     let openPopoverPinId = null;
     let lastRenderedPinsHash = '';
 
+    function getPinStyleInfo(author) {
+        const trimmed = (author || '').trim();
+        const isAnon = !trimmed || trimmed === 'Gość' || trimmed === 'Anonim';
+        
+        if (isAnon) {
+            return {
+                initial: 'A',
+                gradient: 'linear-gradient(135deg, #64748B 0%, #334155 100%)',
+                pulseColor: 'rgba(100, 116, 139, 0.6)'
+            };
+        }
+
+        const firstChar = trimmed.charAt(0).toUpperCase();
+        const gradients = [
+            { g: 'linear-gradient(135deg, #FE0467 0%, #B90045 100%)', p: 'rgba(254, 4, 103, 0.6)' },
+            { g: 'linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)', p: 'rgba(59, 130, 246, 0.6)' },
+            { g: 'linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%)', p: 'rgba(139, 92, 246, 0.6)' },
+            { g: 'linear-gradient(135deg, #10B981 0%, #047857 100%)', p: 'rgba(16, 185, 129, 0.6)' },
+            { g: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)', p: 'rgba(245, 158, 11, 0.6)' },
+            { g: 'linear-gradient(135deg, #06B6D4 0%, #0E7490 100%)', p: 'rgba(6, 182, 212, 0.6)' },
+            { g: 'linear-gradient(135deg, #EC4899 0%, #BE185D 100%)', p: 'rgba(236, 72, 153, 0.6)' },
+            { g: 'linear-gradient(135deg, #F97316 0%, #C2410C 100%)', p: 'rgba(249, 115, 22, 0.6)' }
+        ];
+
+        let charCodeSum = 0;
+        for (let i = 0; i < trimmed.length; i++) {
+            charCodeSum += trimmed.charCodeAt(i);
+        }
+        const selected = gradients[charCodeSum % gradients.length];
+
+        return {
+            initial: firstChar,
+            gradient: selected.g,
+            pulseColor: selected.p
+        };
+    }
+
     function renderPinsForSlide(slideIdx) {
         const slide = slides[slideIdx];
         if (!slide) return;
@@ -5517,17 +5668,21 @@ document.addEventListener('DOMContentLoaded', () => {
             pinMarker.style.top = `${pin.y}%`;
 
             const isOpen = String(openPopoverPinId) === String(pin.id);
+            const styleInfo = getPinStyleInfo(pin.author);
 
             pinMarker.innerHTML = `
-                <div class="pin-pulse-ring"></div>
-                <div class="pin-marker-badge">#${idx + 1}</div>
+                <div class="pin-pulse-ring" style="border-color: ${styleInfo.pulseColor};"></div>
+                <div class="pin-marker-badge" style="background: ${styleInfo.gradient};">
+                    <span class="pin-initial">${styleInfo.initial}</span>
+                    <span class="pin-number-tag">#${idx + 1}</span>
+                </div>
                 <div class="pin-popover-card" style="display: ${isOpen ? 'block' : 'none'};">
                     <div class="pin-popover-header">
                         <span class="pin-popover-author">${escapeHtml(pin.author || 'Anonim')}</span>
                         <span class="pin-popover-date">${escapeHtml(pin.date || '')}</span>
                     </div>
                     <div class="pin-popover-text">${escapeHtml(pin.text)}</div>
-                    <button class="pin-popover-del" data-id="${pin.id}"><i class="fa-solid fa-trash"></i> Usuń pinezkę</button>
+                    <button class="pin-popover-del" data-id="${pin.id}"><i class="fa-solid fa-trash"></i> Usuń komentarz</button>
                 </div>
             `;
 
@@ -5673,6 +5828,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const x = parseFloat(pinXInput.value);
             const y = parseFloat(pinYInput.value);
+            const slideNum = parseInt(pinSlideInput.value, 10);
             const author = document.getElementById('pinAuthor').value.trim();
             const text = document.getElementById('pinComment').value.trim();
 
@@ -5761,29 +5917,36 @@ document.addEventListener('DOMContentLoaded', () => {
             drawerList.innerHTML = `
                 <div class="drawer-empty-state">
                     <i class="fa-solid fa-comments"></i>
-                    <p>Brak dodanych uwag na slajdach.</p>
+                    <p>Brak dodanych komentarzy na slajdach.</p>
                 </div>
             `;
             return;
         }
 
         drawerList.innerHTML = '';
-        pins.forEach((pin) => {
+        pins.forEach((pin, pinIdx) => {
             const slideIdx = pin.slide - 1;
             const slideEl = slides[slideIdx];
             const slideTitle = slideEl ? (slideEl.getAttribute('data-overview-title') || `Slajd #${pin.slide}`) : `Slajd #${pin.slide}`;
+            const styleInfo = getPinStyleInfo(pin.author);
 
             const card = document.createElement('div');
             card.className = 'drawer-item-card';
             card.innerHTML = `
-                <div class="drawer-item-header">
-                    <span class="drawer-item-slide-badge"><i class="fa-solid fa-map-pin"></i> Slajd #${pin.slide}: ${escapeHtml(slideTitle)}</span>
+                <div class="drawer-item-top-row">
+                    <span class="drawer-item-num-badge">#${pinIdx + 1}</span>
                     <span class="drawer-item-date">${escapeHtml(pin.date || '')}</span>
                 </div>
-                <div class="drawer-item-author">${escapeHtml(pin.author || 'Gość')}</div>
+                <div class="drawer-item-slide-row">
+                    <span class="drawer-item-slide-badge"><i class="fa-solid fa-map-pin"></i> Slajd #${pin.slide}: ${escapeHtml(slideTitle)}</span>
+                </div>
+                <div class="drawer-item-author-row">
+                    <div class="drawer-author-avatar" style="background: ${styleInfo.gradient};">${styleInfo.initial}</div>
+                    <div class="drawer-item-author">${escapeHtml(pin.author || 'Anonim')}</div>
+                </div>
                 <div class="drawer-item-text">${escapeHtml(pin.text)}</div>
                 <div class="drawer-item-actions">
-                    <button class="drawer-item-del-btn" data-id="${pin.id}"><i class="fa-solid fa-trash"></i> Usuń uwagą</button>
+                    <button class="drawer-item-del-btn" data-id="${pin.id}"><i class="fa-solid fa-trash"></i> Usuń komentarz</button>
                 </div>
             `;
 
