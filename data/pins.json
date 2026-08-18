@@ -16,5 +16,23 @@
     "author": "Jan Kowalski",
     "text": "Komentarz Jana",
     "date": "18.08.2026"
+  },
+  {
+    "id": "1787067423906",
+    "slide": 1,
+    "x": 26.04,
+    "y": 37.04,
+    "author": "Piotr",
+    "text": "Komentarz Piotra",
+    "date": "18.08.2026"
+  },
+  {
+    "id": "1787067424624",
+    "slide": 1,
+    "x": 36.46,
+    "y": 46.3,
+    "author": "Gość",
+    "text": "Anonimowy komentarz",
+    "date": "18.08.2026"
   }
 ]
