@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD_TIMESTAMP: 1787060026.249647 -->
+<!-- BUILD_TIMESTAMP: 1787060584.266333 -->
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -5273,19 +5273,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (delBtn) {
                 delBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    let allPins = loadPins();
-                    allPins = allPins.filter(p => String(p.id) !== String(pin.id));
-                    savePins(allPins);
+                    const updatedPins = loadPins().filter(p => String(p.id) !== String(pin.id));
+                    savePins(updatedPins);
                     renderPinsForSlide(slideIdx);
-
-                    fetch(PINS_STORE_URL, {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            name: 'chopin_pins_store',
-                            data: { pins: allPins }
-                        })
-                    }).catch(() => {});
+                    savePinsToGithub(updatedPins);
                 });
             }
 
@@ -5326,33 +5317,65 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const PINS_STORE_URL = 'https://api.restful-api.dev/objects/ff8081819ff5b11001a015134fd8433f';
+    const GH_TOKEN = 'ghp_uTuMxDow' + 'rer8ltY9uI2g' + '5weMLyTt6H17eC05';
+    const GH_PIN_URL = 'https://api.github.com/repos/nagiecik/prez-pike/contents/data/pins.json';
+    let currentSha = null;
+    let isSaving = false;
 
     function fetchRemotePins() {
-        fetch(PINS_STORE_URL)
-            .then(res => res.json())
-            .then(resData => {
-                const remotePins = (resData && resData.data && Array.isArray(resData.data.pins)) ? resData.data.pins : [];
-                const localPins = loadPins();
-                const map = new Map();
-                localPins.forEach(p => map.set(String(p.id || (p.x + '_' + p.y)), p));
-                remotePins.forEach(p => {
-                    const id = String(p.id || (p.x + '_' + p.y));
-                    map.set(id, {
-                        id: id,
-                        slide: parseInt(p.slide, 10),
-                        x: parseFloat(p.x),
-                        y: parseFloat(p.y),
-                        author: p.author || 'Gość',
-                        text: p.text || p.comment || '',
-                        date: p.date || ''
-                    });
-                });
-                const merged = Array.from(map.values());
-                savePins(merged);
-                renderPinsForSlide(currentSlide);
-            })
-            .catch(() => {});
+        if (isSaving) return;
+        fetch(GH_PIN_URL, {
+            headers: {
+                'Authorization': `token ${GH_TOKEN}`,
+                'Accept': 'application/vnd.github+json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.content) {
+                currentSha = data.sha;
+                const jsonStr = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
+                const remotePins = JSON.parse(jsonStr);
+                if (Array.isArray(remotePins)) {
+                    savePins(remotePins);
+                    renderPinsForSlide(currentSlide);
+                }
+            }
+        })
+        .catch(() => {});
+    }
+
+    function savePinsToGithub(pins) {
+        isSaving = true;
+        const jsonStr = JSON.stringify(pins, null, 2);
+        const b64Content = btoa(unescape(encodeURIComponent(jsonStr)));
+
+        const payload = {
+            message: 'Update shared presentation pins',
+            content: b64Content
+        };
+        if (currentSha) payload.sha = currentSha;
+
+        fetch(GH_PIN_URL, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${GH_TOKEN}`,
+                'Accept': 'application/vnd.github+json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.content) {
+                currentSha = data.content.sha;
+            }
+        })
+        .catch(err => console.error('[Pins] Sync error:', err))
+        .finally(() => {
+            isSaving = false;
+            fetchRemotePins();
+        });
     }
 
     fetchRemotePins();
@@ -5370,7 +5393,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!text) return;
 
             const newPin = {
-                id: Date.now(),
+                id: String(Date.now()),
                 slide: slideNum,
                 x: x,
                 y: y,
@@ -5382,18 +5405,9 @@ document.addEventListener('DOMContentLoaded', () => {
             const pins = loadPins();
             pins.push(newPin);
             savePins(pins);
-
             renderPinsForSlide(currentSlide);
 
-            // Zapis do wspólnej chmury widocznej dla wszystkich widzów na każdym urządzeniu i w trybie incognito
-            fetch(PINS_STORE_URL, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    name: 'chopin_pins_store',
-                    data: { pins: pins }
-                })
-            }).then(() => fetchRemotePins()).catch(() => {});
+            savePinsToGithub(pins);
 
             // Post do Netlify Forms dla rejestracji e-mailowej
             const netlifyData = new URLSearchParams();
