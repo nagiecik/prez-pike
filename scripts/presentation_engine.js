@@ -749,9 +749,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 delBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
                     let allPins = loadPins();
-                    allPins = allPins.filter(p => p.id !== pin.id);
+                    allPins = allPins.filter(p => String(p.id) !== String(pin.id));
                     savePins(allPins);
                     renderPinsForSlide(slideIdx);
+
+                    fetch(PINS_STORE_URL, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            name: 'chopin_pins_store',
+                            data: { pins: allPins }
+                        })
+                    }).catch(() => {});
                 });
             }
 
@@ -792,38 +801,37 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    const PINS_API = 'https://crudcrud.com/api/cdd578a863ec45f1b85f1dd71c242dde/pins';
+    const PINS_STORE_URL = 'https://api.restful-api.dev/objects/ff8081819ff5b11001a015134fd8433f';
 
     function fetchRemotePins() {
-        fetch(PINS_API)
+        fetch(PINS_STORE_URL)
             .then(res => res.json())
-            .then(remotePins => {
-                if (Array.isArray(remotePins)) {
-                    const localPins = loadPins();
-                    const map = new Map();
-                    localPins.forEach(p => map.set(String(p.id || (p.x + '_' + p.y)), p));
-                    remotePins.forEach(p => {
-                        const id = String(p.id || p._id || (p.x + '_' + p.y));
-                        map.set(id, {
-                            id: id,
-                            slide: parseInt(p.slide, 10),
-                            x: parseFloat(p.x),
-                            y: parseFloat(p.y),
-                            author: p.author || 'Gość',
-                            text: p.text || p.comment || '',
-                            date: p.date || ''
-                        });
+            .then(resData => {
+                const remotePins = (resData && resData.data && Array.isArray(resData.data.pins)) ? resData.data.pins : [];
+                const localPins = loadPins();
+                const map = new Map();
+                localPins.forEach(p => map.set(String(p.id || (p.x + '_' + p.y)), p));
+                remotePins.forEach(p => {
+                    const id = String(p.id || (p.x + '_' + p.y));
+                    map.set(id, {
+                        id: id,
+                        slide: parseInt(p.slide, 10),
+                        x: parseFloat(p.x),
+                        y: parseFloat(p.y),
+                        author: p.author || 'Gość',
+                        text: p.text || p.comment || '',
+                        date: p.date || ''
                     });
-                    const merged = Array.from(map.values());
-                    savePins(merged);
-                    renderPinsForSlide(currentSlide);
-                }
+                });
+                const merged = Array.from(map.values());
+                savePins(merged);
+                renderPinsForSlide(currentSlide);
             })
             .catch(() => {});
     }
 
     fetchRemotePins();
-    setInterval(fetchRemotePins, 5000);
+    setInterval(fetchRemotePins, 3000);
 
     if (pinForm) {
         pinForm.addEventListener('submit', (e) => {
@@ -852,14 +860,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             renderPinsForSlide(currentSlide);
 
-            // Post do zdalnego API dla natychmiastowej synchronizacji ze wszystkimi widzami
-            fetch(PINS_API, {
-                method: 'POST',
+            // Zapis do wspólnej chmury widocznej dla wszystkich widzów na każdym urządzeniu i w trybie incognito
+            fetch(PINS_STORE_URL, {
+                method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newPin)
+                body: JSON.stringify({
+                    name: 'chopin_pins_store',
+                    data: { pins: pins }
+                })
             }).then(() => fetchRemotePins()).catch(() => {});
 
-            // Post do Netlify Forms dla trwałej rejestracji w panelu
+            // Post do Netlify Forms dla rejestracji e-mailowej
             const netlifyData = new URLSearchParams();
             netlifyData.set('form-name', 'presentation-pins');
             netlifyData.set('slide', slideNum);
