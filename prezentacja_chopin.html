@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD_TIMESTAMP: 1787059202.3924406 -->
+<!-- BUILD_TIMESTAMP: 1787059542.8220415 -->
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -4509,6 +4509,17 @@ body.pin-mode-active .slide-container * {
     </div>
 </div>
 
+<!-- Ukryty formularz Netlify dla trwałej rejestracji pinezek w panelu Netlify -->
+<form name="presentation-pins" data-netlify="true" netlify-honeypot="bot-field" hidden>
+    <input type="hidden" name="form-name" value="presentation-pins" />
+    <input type="text" name="slide" />
+    <input type="text" name="x" />
+    <input type="text" name="y" />
+    <input type="text" name="author" />
+    <textarea name="comment"></textarea>
+    <input type="text" name="date" />
+</form>
+
 
     <!-- Logika Prezentacji Interaktywnej oraz Live Reload -->
     <script>
@@ -5306,6 +5317,39 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    const PINS_API = 'https://crudcrud.com/api/cdd578a863ec45f1b85f1dd71c242dde/pins';
+
+    function fetchRemotePins() {
+        fetch(PINS_API)
+            .then(res => res.json())
+            .then(remotePins => {
+                if (Array.isArray(remotePins)) {
+                    const localPins = loadPins();
+                    const map = new Map();
+                    localPins.forEach(p => map.set(String(p.id || (p.x + '_' + p.y)), p));
+                    remotePins.forEach(p => {
+                        const id = String(p.id || p._id || (p.x + '_' + p.y));
+                        map.set(id, {
+                            id: id,
+                            slide: parseInt(p.slide, 10),
+                            x: parseFloat(p.x),
+                            y: parseFloat(p.y),
+                            author: p.author || 'Gość',
+                            text: p.text || p.comment || '',
+                            date: p.date || ''
+                        });
+                    });
+                    const merged = Array.from(map.values());
+                    savePins(merged);
+                    renderPinsForSlide(currentSlide);
+                }
+            })
+            .catch(() => {});
+    }
+
+    fetchRemotePins();
+    setInterval(fetchRemotePins, 5000);
+
     if (pinForm) {
         pinForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -5332,6 +5376,28 @@ document.addEventListener('DOMContentLoaded', () => {
             savePins(pins);
 
             renderPinsForSlide(currentSlide);
+
+            // Post do zdalnego API dla natychmiastowej synchronizacji ze wszystkimi widzami
+            fetch(PINS_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newPin)
+            }).then(() => fetchRemotePins()).catch(() => {});
+
+            // Post do Netlify Forms dla trwałej rejestracji w panelu
+            const netlifyData = new URLSearchParams();
+            netlifyData.set('form-name', 'presentation-pins');
+            netlifyData.set('slide', slideNum);
+            netlifyData.set('x', x);
+            netlifyData.set('y', y);
+            netlifyData.set('author', author || 'Gość');
+            netlifyData.set('comment', text);
+            netlifyData.set('date', newPin.date);
+            fetch('/', {
+                method: 'POST',
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: netlifyData.toString()
+            }).catch(() => {});
 
             if (pinModalOverlay) pinModalOverlay.style.display = 'none';
             pinForm.reset();
