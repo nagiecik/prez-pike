@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- BUILD_TIMESTAMP: 1787061451.499739 -->
+<!-- BUILD_TIMESTAMP: 1787061673.7929544 -->
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
@@ -4506,16 +4506,7 @@ body.pin-mode-active .slide-container * {
     </div>
 </div>
 
-<!-- Ukryty formularz Netlify dla trwałej rejestracji pinezek w panelu Netlify -->
-<form name="presentation-pins" data-netlify="true" netlify-honeypot="bot-field" hidden>
-    <input type="hidden" name="form-name" value="presentation-pins" />
-    <input type="text" name="slide" />
-    <input type="text" name="x" />
-    <input type="text" name="y" />
-    <input type="text" name="author" />
-    <textarea name="comment"></textarea>
-    <input type="text" name="date" />
-</form>
+
 
 
     <!-- Logika Prezentacji Interaktywnej oraz Live Reload -->
@@ -5431,21 +5422,6 @@ document.addEventListener('DOMContentLoaded', () => {
             renderPinsForSlide(currentSlide);
 
             savePinsToGithub(pins);
-
-            // Post do Netlify Forms dla rejestracji e-mailowej
-            const netlifyData = new URLSearchParams();
-            netlifyData.set('form-name', 'presentation-pins');
-            netlifyData.set('slide', slideNum);
-            netlifyData.set('x', x);
-            netlifyData.set('y', y);
-            netlifyData.set('author', author || 'Gość');
-            netlifyData.set('comment', text);
-            netlifyData.set('date', newPin.date);
-            fetch('/', {
-                method: 'POST',
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: netlifyData.toString()
-            }).catch(() => {});
 
             if (pinModalOverlay) pinModalOverlay.style.display = 'none';
             pinForm.reset();

@@ -910,21 +910,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             savePinsToGithub(pins);
 
-            // Post do Netlify Forms dla rejestracji e-mailowej
-            const netlifyData = new URLSearchParams();
-            netlifyData.set('form-name', 'presentation-pins');
-            netlifyData.set('slide', slideNum);
-            netlifyData.set('x', x);
-            netlifyData.set('y', y);
-            netlifyData.set('author', author || 'Gość');
-            netlifyData.set('comment', text);
-            netlifyData.set('date', newPin.date);
-            fetch('/', {
-                method: 'POST',
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: netlifyData.toString()
-            }).catch(() => {});
-
             if (pinModalOverlay) pinModalOverlay.style.display = 'none';
             pinForm.reset();
             togglePinMode(false);
