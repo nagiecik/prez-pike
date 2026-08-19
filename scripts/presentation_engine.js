@@ -1,5 +1,22 @@
 // Silnik interaktywny prezentacji CHOPIN
 document.addEventListener('DOMContentLoaded', () => {
+    // Automatyczna eliminacja sierot (wiszących spójników: i, a, o, u, w, z, na, do, ze, od itp.)
+    function applyPolishNoBreakSpaces(container = document.body) {
+        const walker = document.createTreeWalker(
+            container,
+            NodeFilter.SHOW_TEXT,
+            null,
+            false
+        );
+        let node;
+        while ((node = walker.nextNode())) {
+            if (node.nodeValue && node.nodeValue.trim().length > 0) {
+                node.nodeValue = node.nodeValue.replace(/(\b[a-zA-ZąćęłńóśźżĄĆĘŁŃÓŚŹŻ]{1,2})\s+/g, '$1\u00A0');
+            }
+        }
+    }
+    applyPolishNoBreakSpaces();
+
     const slides = document.querySelectorAll('.slide-container');
     const totalSlides = slides.length;
     let currentSlide = 0;
@@ -45,7 +62,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     themeToggleBtn.addEventListener('click', toggleTheme);
 
-    const slideCompleted = {};
+    const completedMemorySlides = {};
+
+    function isEligibleForMemory(slideIndex) {
+        const slide = slides[slideIndex];
+        if (!slide) return false;
+
+        // Wykluczenia per życzenie użytkownika:
+        // Slajd 19 z natywną skalowalnością (id="slide8_photo") oraz Slajd 22 z Case Study (.case-study-flow)
+        if (slide.id === 'slide8_photo' || slide.querySelector('.case-study-flow')) {
+            return false;
+        }
+
+        const subSteps = getSubStepElements(slideIndex);
+        return subSteps.length > 0;
+    }
 
     function getSubStepElements(slideIndex) {
         const slide = slides[slideIndex];
@@ -81,6 +112,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateSubSteps() {
         const elements = getSubStepElements(currentSlide);
         if (elements.length === 0) return;
+
+        const isMemoryDone = completedMemorySlides[currentSlide];
+
+        if (isMemoryDone && slides[currentSlide]) {
+            slides[currentSlide].classList.add('no-transitions');
+        }
 
         const isCaseStudy = slides[currentSlide].querySelector('.case-study-flow');
         if (isCaseStudy) {
@@ -135,6 +172,28 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // Specjalna obsługa Slajdu 4 (3 Warstwy - #slide3_layers)
+        const is3Layers = slides[currentSlide].id === 'slide3_layers' || slides[currentSlide].querySelector('.layers-columns-wrapper');
+        if (is3Layers) {
+            elements.forEach((el, idx) => {
+                const stepNum = idx + 1;
+                el.classList.remove('tile-active', 'tile-normal', 'tile-dimmed');
+                if (completedMemorySlides[currentSlide] || stepNum <= currentSubStep) {
+                    // Gdy zapamiętany jako ukończony, wszystkie 3 warstwy są aktywne (kolorowe: różowy, niebieski, pomarańczowy)
+                    el.classList.add('tile-active');
+                } else {
+                    el.classList.add('tile-dimmed');
+                }
+            });
+
+            if (isMemoryDone && slides[currentSlide]) {
+                setTimeout(() => {
+                    if (slides[currentSlide]) slides[currentSlide].classList.remove('no-transitions');
+                }, 60);
+            }
+            return;
+        }
+
         const isCascade = slides[currentSlide].querySelector('#slide2Cascade');
         const isBullets = slides[currentSlide].querySelector('.feature-list');
         const isTiles = slides[currentSlide].querySelector('.tiled-content, .ecosystem-layers, .stacked-cards-container, .concentric-nested-wrapper, .concentric-ecosystem-slide');
@@ -143,30 +202,47 @@ document.addEventListener('DOMContentLoaded', () => {
             const stepNum = idx + 1;
             el.classList.remove('step-active', 'step-normal', 'bullet-active', 'bullet-normal', 'bullet-dimmed', 'tile-active', 'tile-normal', 'tile-dimmed');
 
-            if (isCascade) {
-                if (stepNum === currentSubStep) {
-                    el.classList.add('step-active');
-                } else if (stepNum < currentSubStep) {
+            if (isMemoryDone) {
+                // Po powrocie na ukończony slajd: wszystkie kafelki/bullety odkryte w stanie aktywnym z outlinem (natychmiastowo)
+                if (isCascade) {
                     el.classList.add('step-normal');
-                }
-            } else if (isBullets) {
-                if (stepNum === currentSubStep) {
-                    el.classList.add('bullet-active');
-                } else if (stepNum < currentSubStep) {
+                } else if (isBullets) {
                     el.classList.add('bullet-normal');
-                } else {
-                    el.classList.add('bullet-dimmed');
-                }
-            } else if (isTiles) {
-                if (stepNum === currentSubStep) {
-                    el.classList.add('tile-active');
-                } else if (stepNum < currentSubStep) {
+                } else if (isTiles) {
                     el.classList.add('tile-normal');
-                } else {
-                    el.classList.add('tile-dimmed');
+                }
+            } else {
+                if (isCascade) {
+                    if (stepNum === currentSubStep) {
+                        el.classList.add('step-active');
+                    } else if (stepNum < currentSubStep) {
+                        el.classList.add('step-normal');
+                    }
+                } else if (isBullets) {
+                    if (stepNum === currentSubStep) {
+                        el.classList.add('bullet-active');
+                    } else if (stepNum < currentSubStep) {
+                        el.classList.add('bullet-normal');
+                    } else {
+                        el.classList.add('bullet-dimmed');
+                    }
+                } else if (isTiles) {
+                    if (stepNum === currentSubStep) {
+                        el.classList.add('tile-active');
+                    } else if (stepNum < currentSubStep) {
+                        el.classList.add('tile-normal');
+                    } else {
+                        el.classList.add('tile-dimmed');
+                    }
                 }
             }
         });
+
+        if (isMemoryDone && slides[currentSlide]) {
+            setTimeout(() => {
+                if (slides[currentSlide]) slides[currentSlide].classList.remove('no-transitions');
+            }, 60);
+        }
     }
 
     // Kliknięcie bezpośrednio w kafelek / bullet / dot
@@ -247,6 +323,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (index < 0) index = 0;
         if (index >= totalSlides) index = totalSlides - 1;
 
+        // Jeśli idziemy do przodu (index > currentSlide), zapamiętujemy minione slajdy jako ukończone
+        if (index > currentSlide) {
+            for (let i = currentSlide; i < index; i++) {
+                if (isEligibleForMemory(i)) {
+                    completedMemorySlides[i] = true;
+                }
+            }
+        }
+
         slides.forEach((slide, idx) => {
             if (idx === index) {
                 slide.classList.add('active');
@@ -259,9 +344,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const subStepElements = getSubStepElements(currentSlide);
         if (subStepElements.length > 0) {
-            // Zasada globalna: Pierwszy element jest zawsze domyślnie aktywny (highlight) na start
-            const startAttr = slides[currentSlide].getAttribute('data-start-step');
-            currentSubStep = startAttr ? parseInt(startAttr, 10) : 1;
+            if (completedMemorySlides[currentSlide]) {
+                currentSubStep = subStepElements.length;
+            } else {
+                const startAttr = slides[currentSlide].getAttribute('data-start-step');
+                currentSubStep = startAttr ? parseInt(startAttr, 10) : 1;
+            }
             updateSubSteps();
         }
 
@@ -289,10 +377,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const subStepElements = getSubStepElements(currentSlide);
-        if (subStepElements.length > 0 && currentSubStep < subStepElements.length) {
-            currentSubStep++;
-            updateSubSteps();
-            return;
+        if (subStepElements.length > 0) {
+            if (completedMemorySlides[currentSlide]) {
+                if (currentSlide < totalSlides - 1) {
+                    goToSlide(currentSlide + 1, true);
+                }
+                return;
+            }
+            if (currentSubStep < subStepElements.length) {
+                currentSubStep++;
+                updateSubSteps();
+                return;
+            } else {
+                if (isEligibleForMemory(currentSlide)) {
+                    completedMemorySlides[currentSlide] = true;
+                }
+            }
         }
 
         if (currentSlide < totalSlides - 1) {
@@ -310,10 +410,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const subStepElements = getSubStepElements(currentSlide);
-        if (subStepElements.length > 0 && currentSubStep > 1) {
-            currentSubStep--;
-            updateSubSteps();
-            return;
+        if (subStepElements.length > 0) {
+            if (completedMemorySlides[currentSlide]) {
+                if (currentSlide > 0) {
+                    goToSlide(currentSlide - 1, false);
+                }
+                return;
+            }
+            if (currentSubStep > 1) {
+                currentSubStep--;
+                updateSubSteps();
+                return;
+            }
         }
 
         if (currentSlide > 0) {
