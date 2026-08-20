@@ -250,6 +250,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const elements = getSubStepElements(sIdx);
         elements.forEach((el, eIdx) => {
             el.addEventListener('click', (e) => {
+                if (isPinMode) {
+                    return;
+                }
                 if (e) e.stopPropagation();
                 if (currentSlide === sIdx) {
                     currentSubStep = eIdx + 1;
@@ -261,6 +264,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const dots = slide.querySelectorAll('.case-dot-node, .case-indicator-dot');
         dots.forEach((dot) => {
             dot.addEventListener('click', (e) => {
+                if (isPinMode) {
+                    return;
+                }
                 if (e) e.stopPropagation();
                 if (currentSlide === sIdx) {
                     const stepAttr = dot.getAttribute('data-step');
