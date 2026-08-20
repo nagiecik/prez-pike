@@ -432,18 +432,7 @@ svg path.logo-text {
 
 /* Typografia i nagłówki */
 .benefit-label {
-    font-size: 0.85rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 6px;
-    color: #ffffff;
-    margin-bottom: 8px;
-    display: block;
-    opacity: 0.95;
-}
-
-body.light-theme .benefit-label {
-    color: #0f172a;
+    display: none !important;
 }
 
 .slide-title {
