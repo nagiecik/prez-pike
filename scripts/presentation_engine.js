@@ -41,12 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function applyTheme(theme) {
         if (theme === 'light') {
             document.body.classList.add('light-theme');
-            themeIcon.className = 'fa-solid fa-moon';
-            themeToggleBtn.title = 'Przełącz na motyw Ciemny (T)';
+            if (themeIcon) themeIcon.className = 'fa-solid fa-moon';
+            if (themeToggleBtn) themeToggleBtn.title = 'Przełącz na motyw Ciemny (T)';
         } else {
             document.body.classList.remove('light-theme');
-            themeIcon.className = 'fa-solid fa-sun';
-            themeToggleBtn.title = 'Przełącz na motyw Jasny (T)';
+            if (themeIcon) themeIcon.className = 'fa-solid fa-sun';
+            if (themeToggleBtn) themeToggleBtn.title = 'Przełącz na motyw Jasny (T)';
         }
         localStorage.setItem('presentation_theme', theme);
     }
@@ -60,7 +60,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('presentation_theme') || 'dark';
     applyTheme(savedTheme);
 
-    themeToggleBtn.addEventListener('click', toggleTheme);
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', toggleTheme);
+    }
 
     const completedMemorySlides = {};
 
@@ -123,42 +125,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isCaseStudy) {
             const slideEl = slides[currentSlide];
             const track = slideEl.querySelector('#caseVTrack');
-            const totalSteps = 6;
+            const totalSteps = 5;
             const current = Math.min(Math.max(currentSubStep, 1), totalSteps);
 
-            // Kroki 1 do 5: Pionowy przesuw i wyostrzenie TYLKO 1 kafelka naraz
-            if (current <= 5) {
-                slideEl.classList.remove('mode-overview');
-                const stepIdx = current - 1; // 0..4
-                const cardHeightWithGap = 340;
-                const vShift = -stepIdx * cardHeightWithGap;
-
-                if (track) {
-                    track.style.transform = `translateY(${vShift}px)`;
-                }
-
-                elements.forEach((el, idx) => {
-                    const stepNum = idx + 1;
-                    el.classList.remove('tile-active', 'tile-normal', 'tile-dimmed', 'tile-passed');
-                    if (stepNum === current) {
-                        el.classList.add('tile-active');
-                    } else if (stepNum < current) {
-                        el.classList.add('tile-passed');
-                    } else {
-                        el.classList.add('tile-dimmed');
-                    }
-                });
-            } else {
-                // Krok 6: Tryb pełnego podsumowania (wszystkie kafelki w 1 rzędzie + podsumowanie)
-                slideEl.classList.add('mode-overview');
-                if (track) {
-                    track.style.transform = 'none';
-                }
-                elements.forEach((el) => {
-                    el.classList.remove('tile-dimmed', 'tile-active', 'tile-passed');
-                    el.classList.add('tile-normal');
-                });
+            const stepIdx = current - 1; // 0..4
+            const activeCard = elements[stepIdx];
+            if (track && activeCard) {
+                const vShift = -activeCard.offsetTop;
+                track.style.transform = `translateY(${vShift}px)`;
             }
+
+            elements.forEach((el, idx) => {
+                const stepNum = idx + 1;
+                el.classList.remove('tile-active', 'tile-normal', 'tile-dimmed', 'tile-passed');
+                if (stepNum === current) {
+                    el.classList.add('tile-active');
+                } else if (stepNum < current) {
+                    el.classList.add('tile-passed');
+                } else {
+                    el.classList.add('tile-dimmed');
+                }
+            });
+
             // Aktualizacja bocznego wskaźnika postępu (case-indicator-dot)
             const indicatorDots = slideEl.querySelectorAll('.case-indicator-dot');
             indicatorDots.forEach((dot) => {
@@ -371,6 +359,67 @@ document.addEventListener('DOMContentLoaded', () => {
         history.replaceState(null, null, `#${currentSlide + 1}`);
         updateOverviewCards();
         if (typeof renderPinsForSlide === 'function') renderPinsForSlide(currentSlide);
+        handleSlideAudio(currentSlide);
+    }
+
+    // ==========================================================================
+    // SLIDE AUDIO PLAYBACK ENGINE
+    // ==========================================================================
+    let currentActiveAudio = null;
+    let isAudioMuted = false;
+
+    function handleSlideAudio(slideIndex) {
+        if (currentActiveAudio) {
+            currentActiveAudio.pause();
+            currentActiveAudio.currentTime = 0;
+            currentActiveAudio = null;
+        }
+
+        const slide = slides[slideIndex];
+        if (!slide) return;
+
+        const audioSrc = slide.getAttribute('data-audio-src');
+        let audioEl = slide.querySelector('audio.slide-audio');
+
+        if (audioSrc && !audioEl) {
+            audioEl = document.createElement('audio');
+            audioEl.className = 'slide-audio';
+            audioEl.src = audioSrc;
+            audioEl.preload = 'auto';
+            slide.appendChild(audioEl);
+        }
+
+        if (audioEl && (audioEl.getAttribute('src') || audioEl.src)) {
+            audioEl.muted = isAudioMuted;
+            audioEl.volume = 1.0;
+            currentActiveAudio = audioEl;
+            audioEl.currentTime = 0;
+            const playPromise = audioEl.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(err => {
+                    console.log('[Slide Audio] Autoodtwarzanie audio czeka na pierwszą interakcję użytkownika:', err);
+                    const unlockAndPlay = () => {
+                        if (currentActiveAudio === audioEl && currentSlide === slideIndex) {
+                            audioEl.play().catch(e => console.log('[Slide Audio] Błąd po geście:', e));
+                        }
+                        window.removeEventListener('keydown', unlockAndPlay);
+                        window.removeEventListener('pointerdown', unlockAndPlay);
+                        window.removeEventListener('click', unlockAndPlay);
+                    };
+                    window.addEventListener('keydown', unlockAndPlay, { once: true });
+                    window.addEventListener('pointerdown', unlockAndPlay, { once: true });
+                    window.addEventListener('click', unlockAndPlay, { once: true });
+                });
+            }
+        }
+    }
+
+    function toggleAudioMute() {
+        isAudioMuted = !isAudioMuted;
+        if (currentActiveAudio) {
+            currentActiveAudio.muted = isAudioMuted;
+        }
+        console.log('[Slide Audio] Wyciszenie:', isAudioMuted ? 'WŁĄCZONE' : 'WYŁĄCZONE');
     }
 
     function nextSlide() {
@@ -748,6 +797,10 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'P':
                 togglePinMode();
                 break;
+            case 'm':
+            case 'M':
+                toggleAudioMute();
+                break;
             case 'l':
             case 'L':
                 toggleCommentsDrawer();
@@ -804,13 +857,82 @@ document.addEventListener('DOMContentLoaded', () => {
             .replace(/'/g, '&#039;');
     }
 
+    function getSlideId(slideEl, sIdx) {
+        if (!slideEl) return null;
+        const attrId = slideEl.getAttribute('data-slide-id');
+        if (attrId) return attrId;
+        
+        const idx = (typeof sIdx === 'number') ? sIdx : Array.from(slides).indexOf(slideEl);
+        if (idx >= 0 && LEGACY_SLIDE_MAP[idx + 1]) {
+            return LEGACY_SLIDE_MAP[idx + 1];
+        }
+        return slideEl.id || null;
+    }
+
+    function findSlideIndexById(slideId) {
+        if (!slideId) return -1;
+        for (let i = 0; i < slides.length; i++) {
+            if (getSlideId(slides[i], i) === slideId) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    const LEGACY_SLIDE_MAP = {
+        1: "slide_01",
+        2: "slide_02",
+        3: "slide_02_cascade",
+        4: "slide_03_layers",
+        5: "slide_04",
+        6: "slide_04_last",
+        7: "slide_04_photo",
+        8: "slide_05",
+        9: "slide_05_last",
+        10: "slide_05_photo",
+        11: "slide_06",
+        12: "slide_06_last",
+        13: "slide_06_photo",
+        14: "slide_07",
+        15: "slide_07_last",
+        16: "slide_07_photo",
+        17: "slide_08",
+        18: "slide_08_last",
+        19: "slide_08_photo",
+        20: "slide_09",
+        21: "slide_09_perspectives",
+        22: "slide_10",
+        23: "slide_11",
+        24: "slide_12"
+    };
+
+    function normalizePins(pins) {
+        if (!Array.isArray(pins)) return [];
+        pins.forEach(pin => {
+            if (!pin.slideId && pin.slide && LEGACY_SLIDE_MAP[pin.slide]) {
+                pin.slideId = LEGACY_SLIDE_MAP[pin.slide];
+            }
+        });
+        return pins;
+    }
+
     function loadPins() {
+        let pins = [];
         try {
             const data = localStorage.getItem('chopin_visual_pins');
-            return data ? JSON.parse(data) : [];
-        } catch (e) {
-            return [];
+            if (data) {
+                const parsed = JSON.parse(data);
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                    pins = parsed;
+                }
+            }
+        } catch (e) {}
+
+        if (pins.length === 0 && typeof window.INITIAL_PINS !== 'undefined' && Array.isArray(window.INITIAL_PINS)) {
+            pins = window.INITIAL_PINS;
         }
+
+        return normalizePins(pins);
     }
 
     function savePins(pins) {
@@ -876,8 +998,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const slide = slides[slideIdx];
         if (!slide) return;
 
-        const pins = loadPins().filter(p => p.slide === (slideIdx + 1));
-        const currentHash = JSON.stringify(pins) + '_' + openPopoverPinId + '_' + slideIdx;
+        const currentSlideId = getSlideId(slide);
+        const pins = loadPins().filter(p => {
+            if (p.slideId && currentSlideId) {
+                return p.slideId === currentSlideId;
+            }
+            return p.slide === (slideIdx + 1);
+        });
+        const currentHash = JSON.stringify(pins) + '_' + openPopoverPinId + '_' + slideIdx + '_' + currentSlideId;
 
         if (currentHash === lastRenderedPinsHash && slide.querySelector('.slide-pin-marker')) {
             return;
@@ -955,10 +1083,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 const rect = slide.getBoundingClientRect();
                 const xPercent = ((e.clientX - rect.left) / rect.width) * 100;
                 const yPercent = ((e.clientY - rect.top) / rect.height) * 100;
+                const slideId = getSlideId(slide) || `slide_${sIdx + 1}`;
 
                 if (pinXInput) pinXInput.value = xPercent.toFixed(2);
                 if (pinYInput) pinYInput.value = yPercent.toFixed(2);
                 if (pinSlideInput) pinSlideInput.value = sIdx + 1;
+                const pinSlideIdInput = document.getElementById('pinSlideIdInput');
+                if (pinSlideIdInput) pinSlideIdInput.value = slideId;
                 
                 const title = slide.getAttribute('data-overview-title') || `Slajd #${sIdx + 1}`;
                 if (pinSlideBadge) pinSlideBadge.textContent = `Slajd #${sIdx + 1}: ${title}`;
@@ -1004,8 +1135,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const jsonStr = decodeURIComponent(escape(atob(data.content.replace(/\s/g, ''))));
                 const remotePins = JSON.parse(jsonStr);
                 if (Array.isArray(remotePins)) {
-                    savePins(remotePins);
+                    const normalized = normalizePins(remotePins);
+                    savePins(normalized);
                     renderPinsForSlide(currentSlide);
+                    updateCommentsDrawer();
                 }
             }
         })
@@ -1014,7 +1147,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function savePinsToGithub(pins) {
         isSaving = true;
-        const jsonStr = JSON.stringify(pins, null, 2);
+        const normalized = normalizePins(pins);
+        const jsonStr = JSON.stringify(normalized, null, 2);
         const b64Content = btoa(unescape(encodeURIComponent(jsonStr)));
 
         const payload = {
@@ -1045,15 +1179,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    fetchRemotePins();
-    setInterval(fetchRemotePins, 1500);
-
     if (pinForm) {
         pinForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const x = parseFloat(pinXInput.value);
             const y = parseFloat(pinYInput.value);
             const slideNum = parseInt(pinSlideInput.value, 10);
+            const pinSlideIdInput = document.getElementById('pinSlideIdInput');
+            const slideId = (pinSlideIdInput && pinSlideIdInput.value) ? pinSlideIdInput.value : getSlideId(slides[currentSlide]);
             const author = document.getElementById('pinAuthor').value.trim();
             const text = document.getElementById('pinComment').value.trim();
 
@@ -1065,6 +1198,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const newPin = {
                 id: String(Date.now()),
+                slideId: slideId,
                 slide: slideNum,
                 x: x,
                 y: y,
@@ -1150,9 +1284,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
         drawerList.innerHTML = '';
         pins.forEach((pin, pinIdx) => {
-            const slideIdx = pin.slide - 1;
-            const slideEl = slides[slideIdx];
-            const slideTitle = slideEl ? (slideEl.getAttribute('data-overview-title') || `Slajd #${pin.slide}`) : `Slajd #${pin.slide}`;
+            let targetSlideIdx = -1;
+            if (pin.slideId) {
+                targetSlideIdx = findSlideIndexById(pin.slideId);
+            }
+            if (targetSlideIdx === -1 && typeof pin.slide === 'number') {
+                targetSlideIdx = pin.slide - 1;
+            }
+            if (targetSlideIdx < 0 || targetSlideIdx >= slides.length) targetSlideIdx = 0;
+
+            const slideEl = slides[targetSlideIdx];
+            const currentNum = targetSlideIdx + 1;
+            const slideTitle = slideEl ? (slideEl.getAttribute('data-overview-title') || `Slajd #${currentNum}`) : `Slajd #${currentNum}`;
             const styleInfo = getPinStyleInfo(pin.author);
 
             const card = document.createElement('div');
@@ -1163,7 +1306,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="drawer-item-date">${escapeHtml(pin.date || '')}</span>
                 </div>
                 <div class="drawer-item-slide-row">
-                    <span class="drawer-item-slide-badge"><i class="fa-solid fa-map-pin"></i> Slajd #${pin.slide}: ${escapeHtml(slideTitle)}</span>
+                    <span class="drawer-item-slide-badge"><i class="fa-solid fa-map-pin"></i> Slajd #${currentNum}: ${escapeHtml(slideTitle)}</span>
                 </div>
                 <div class="drawer-item-author-row">
                     <div class="drawer-author-avatar" style="background: ${styleInfo.gradient};">${styleInfo.initial}</div>
@@ -1177,16 +1320,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
             card.addEventListener('click', () => {
                 toggleCommentsDrawer(false);
-                goToSlide(slideIdx);
+                goToSlide(targetSlideIdx);
                 openPopoverPinId = pin.id;
                 lastRenderedPinsHash = '';
-                renderPinsForSlide(slideIdx);
+                renderPinsForSlide(targetSlideIdx);
             });
 
             const delBtn = card.querySelector('.drawer-item-del-btn');
             if (delBtn) {
                 delBtn.addEventListener('click', (e) => {
                     e.stopPropagation();
+                    openPopoverPinId = null;
                     const updatedPins = loadPins().filter(p => String(p.id) !== String(pin.id));
                     savePins(updatedPins);
                     lastRenderedPinsHash = '';
@@ -1210,34 +1354,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initOverview();
     goToSlide(getSlideFromHash());
+    fetchRemotePins();
 
     window.addEventListener('hashchange', () => {
         goToSlide(getSlideFromHash());
     });
-
-    // Automatyczne odświeżanie przeglądarki (Live Reload) tylko na lokalnym serwerze (localhost / 127.0.0.1)
-    (function setupLiveReload() {
-        const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-        if (!isLocalHost) return;
-
-        let initialTimestamp = null;
-        const initialMatch = document.documentElement.outerHTML.match(/<!-- BUILD_TIMESTAMP:\s*(\d+(\.\d+)?) -->/);
-        if (initialMatch) {
-            initialTimestamp = initialMatch[1];
-        }
-
-        setInterval(() => {
-            fetch(window.location.href, { cache: 'no-store' })
-                .then(res => res.text())
-                .then(html => {
-                    const newMatch = html.match(/<!-- BUILD_TIMESTAMP:\s*(\d+(\.\d+)?) -->/);
-                    if (newMatch && initialTimestamp && newMatch[1] !== initialTimestamp) {
-                        console.log('[LiveReload] Wykryto nową kompilację prezentacji. Odświeżam stronę...');
-                        window.location.reload();
-                    }
-                })
-                .catch(() => {});
-        }, 1500);
-    })();
 });
 

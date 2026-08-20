@@ -1,40 +1,54 @@
-<div class="slide-container" data-overview-title="Transparentny Status Zlecenia" id="slide10">
+<div class="slide-container status-marquee-slide" data-slide-id="slide_07" data-overview-title="Transparentny Status Zlecenia" id="slide10">
     <!-- Ambient Glow (taki sam we wszystkich slajdach korzyści) -->
     <div class="title-ambient-glow"></div>
 
-    <!-- COMPONENT: benefit_label_4 -->
-    <h2 class="slide-title"><span>Mniej pytań o status, większa przejrzystość</span></h2>
-    <p class="lead">Gdy klient wie, co się dzieje z jego usługą lub zgłoszeniem, <span>nie musi dzwonić na infolinię.</span></p>
+    <div class="header-center-flow" style="text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; width: 100%; margin: 0 auto;">
+        <h2 class="slide-title text-center" style="margin: 0 auto 16px auto; max-width: 1000px; text-align: center;">
+            <span>Mniej pytań o status,</span> większa przejrzystość
+        </h2>
+        <p class="lead text-center" style="max-width: 850px; margin: 0 auto; text-align: center;">
+            Gdy klient wie, co się dzieje z jego usługą lub zgłoszeniem, <span>nie musi dzwonić na infolinię.</span>
+        </p>
+    </div>
 
-    <div class="two-column">
-        <div>
-            <ul class="feature-list">
-                <li>
-                    <i class="fa-solid fa-check"></i>
-                    <div class="bullet-content">
-                        <strong class="bullet-title">Proces jako dowód</strong>
-                        <span class="bullet-desc">Gdy technik zmienia status zlecenia w terenie, wiedza wraca do systemu i aplikacji klienta w czasie rzeczywistym.</span>
-                    </div>
-                </li>
-                <li>
-                    <i class="fa-solid fa-check"></i>
-                    <div class="bullet-content">
-                        <strong class="bullet-title">Eliminacja pytających połączeń</strong>
-                        <span class="bullet-desc">Odpowiedzi na pytania „Kiedy technik?”, „Czy zgłoszenie dotarło?” są zawsze pod ręką w eBOK.</span>
-                    </div>
-                </li>
-                <li>
-                    <i class="fa-solid fa-check"></i>
-                    <div class="bullet-content">
-                        <strong class="bullet-title">Czysta oszczędność czasu</strong>
-                        <span class="bullet-desc">Konsultanci BOK skupiają się na trudnych sprawach, zamiast podawać statusy przez telefon.</span>
-                    </div>
-                </li>
-            </ul>
+    <!-- Płynny, nieskończony Marquee z dwiema liniami kart -->
+    <div class="card-marquee-container">
+        <!-- Rząd 1: ruch w lewo -->
+        <div class="card-marquee-row marquee-to-left">
+            <div class="card-marquee-track">
+                <img src="assets/card_marquee_1.svg" alt="Status Card 1" class="marquee-card-img">
+                <img src="assets/card_marquee_2.svg" alt="Status Card 2" class="marquee-card-img">
+                <img src="assets/card_marquee_3.svg" alt="Status Card 3" class="marquee-card-img">
+                <img src="assets/card_marquee_4.svg" alt="Status Card 4" class="marquee-card-img">
+                <img src="assets/card_marquee_5.svg" alt="Status Card 5" class="marquee-card-img">
+                <img src="assets/card_marquee_6.svg" alt="Status Card 6" class="marquee-card-img">
+                <!-- Duplikacja dla idealnie płynnego zapętlenia 0% -> -50% -->
+                <img src="assets/card_marquee_1.svg" alt="Status Card 1" class="marquee-card-img">
+                <img src="assets/card_marquee_2.svg" alt="Status Card 2" class="marquee-card-img">
+                <img src="assets/card_marquee_3.svg" alt="Status Card 3" class="marquee-card-img">
+                <img src="assets/card_marquee_4.svg" alt="Status Card 4" class="marquee-card-img">
+                <img src="assets/card_marquee_5.svg" alt="Status Card 5" class="marquee-card-img">
+                <img src="assets/card_marquee_6.svg" alt="Status Card 6" class="marquee-card-img">
+            </div>
         </div>
-        <div class="image-wrapper">
-            <img src="assets/slide_07_mockup_1_dark.png" alt="Transparentność statusu i cyfrowa obsługa klienta w eBOK" class="mockup-img-dark">
-            <img src="assets/slide_07_mockup_1_light.png" alt="Transparentność statusu i cyfrowa obsługa klienta w eBOK" class="mockup-img-light">
+
+        <!-- Rząd 2: ruch w prawo -->
+        <div class="card-marquee-row marquee-to-right">
+            <div class="card-marquee-track">
+                <img src="assets/card_marquee_4.svg" alt="Status Card 4" class="marquee-card-img">
+                <img src="assets/card_marquee_5.svg" alt="Status Card 5" class="marquee-card-img">
+                <img src="assets/card_marquee_6.svg" alt="Status Card 6" class="marquee-card-img">
+                <img src="assets/card_marquee_1.svg" alt="Status Card 1" class="marquee-card-img">
+                <img src="assets/card_marquee_2.svg" alt="Status Card 2" class="marquee-card-img">
+                <img src="assets/card_marquee_3.svg" alt="Status Card 3" class="marquee-card-img">
+                <!-- Duplikacja dla idealnie płynnego zapętlenia -50% -> 0% -->
+                <img src="assets/card_marquee_4.svg" alt="Status Card 4" class="marquee-card-img">
+                <img src="assets/card_marquee_5.svg" alt="Status Card 5" class="marquee-card-img">
+                <img src="assets/card_marquee_6.svg" alt="Status Card 6" class="marquee-card-img">
+                <img src="assets/card_marquee_1.svg" alt="Status Card 1" class="marquee-card-img">
+                <img src="assets/card_marquee_2.svg" alt="Status Card 2" class="marquee-card-img">
+                <img src="assets/card_marquee_3.svg" alt="Status Card 3" class="marquee-card-img">
+            </div>
         </div>
     </div>
 </div>

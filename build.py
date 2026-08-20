@@ -28,16 +28,30 @@ def read_file(rel_path):
 
 def embed_local_assets(content):
     def replacer(match):
-        rel_img_path = match.group(1)
+        attr_name = match.group(1)
+        rel_img_path = match.group(2)
         full_img_path = os.path.join(base_dir, rel_img_path)
         if os.path.isfile(full_img_path):
             ext = os.path.splitext(full_img_path)[1].lower().replace('.', '')
-            mime = 'image/png' if ext == 'png' else ('image/jpeg' if ext in ['jpg', 'jpeg'] else 'image/svg+xml')
+            if ext == 'png':
+                mime = 'image/png'
+            elif ext in ['jpg', 'jpeg']:
+                mime = 'image/jpeg'
+            elif ext == 'svg':
+                mime = 'image/svg+xml'
+            elif ext == 'mp3':
+                mime = 'audio/mpeg'
+            elif ext == 'wav':
+                mime = 'audio/wav'
+            elif ext == 'ogg':
+                mime = 'audio/ogg'
+            else:
+                mime = 'application/octet-stream'
             with open(full_img_path, 'rb') as f:
                 b64 = base64.b64encode(f.read()).decode('utf-8')
-            return f'src="data:{mime};base64,{b64}"'
+            return f'{attr_name}="data:{mime};base64,{b64}"'
         return match.group(0)
-    return re.sub(r'src=["\'](assets/[^"\']+)["\']', replacer, content)
+    return re.sub(r'(src|data-audio-src)=["\'](assets/[^"\']+)["\']', replacer, content)
 
 def compile_presentation():
     css_content = read_file(os.path.join("styles", "main.css"))

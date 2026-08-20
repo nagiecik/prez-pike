@@ -1,91 +1,74 @@
-<div class="slide-container case-study-slide" data-overview-title="Proces End-to-End W Praktyce" id="slide15" data-start-step="1">
-    <div class="case-header-fixed">
-        <span class="benefit-label">CASE STUDY: PROCES END-TO-END</span>
-        <h2 class="slide-title">
-            Proces end-to-end jako <span>dowód wartości</span><br>
-            <span class="slide-subtitle-narrative">
-                Zobaczmy ten model w jednym procesie – od zamówienia w eBOK po natychmiastowy status.
-            </span>
-        </h2>
-    </div>
+<div class="slide-container case-study-slide case-study-2col" data-slide-id="slide_10" data-overview-title="Proces End-to-End W Praktyce" id="slide15" data-start-step="1">
+    <div class="title-ambient-glow"></div>
 
-    <!-- Wirtualny pionowy wizjer / viewport z 5 kafelkami -->
-    <div class="case-v-viewport" id="caseVViewport">
-        <!-- Boczny wskaźnik postępu (pionowy tracker) -->
+    <div class="case-study-layout-row">
+        <!-- Lewa kolumna: Nagłówek łamany po słowie proces -->
+        <div class="case-col-left">
+            <h2 class="slide-title">
+                Jeden proces<br><span>spaja wszystkie obszary</span>
+            </h2>
+        </div>
+
+        <!-- Środek: Wizjer z kartami -->
+        <div class="case-col-cards">
+            <div class="case-v-viewport" id="caseVViewport">
+                <!-- Pionowy tor z 5 kafelkami -->
+                <div class="case-study-flow case-v-track" id="caseVTrack">
+                    <!-- Krok 1 -->
+                    <div class="case-step-card tile tile-active" data-step="1">
+                        <div class="case-step-num-badge">KROK 01</div>
+                        <div class="case-step-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                        <span class="case-step-badge">Mniej infolinii</span>
+                        <h3 class="case-step-title">Zamówienie w aplikacji</h3>
+                        <p class="case-step-desc">Abonent zamawia usługę w eBOK. <strong>Nie dzwoni na infolinię.</strong></p>
+                    </div>
+
+                    <!-- Krok 2 -->
+                    <div class="case-step-card tile" data-step="2">
+                        <div class="case-step-num-badge">KROK 02</div>
+                        <div class="case-step-icon"><i class="fa-solid fa-folder-tree"></i></div>
+                        <span class="case-step-badge">Jeden kontekst</span>
+                        <h3 class="case-step-title">Kontekst Klienta</h3>
+                        <p class="case-step-desc">Zamówienie trafia do BOK z pełną historią klienta, a nie jako osobny formularz.</p>
+                    </div>
+
+                    <!-- Krok 3 -->
+                    <div class="case-step-card tile" data-step="3">
+                        <div class="case-step-num-badge">KROK 03</div>
+                        <div class="case-step-icon"><i class="fa-solid fa-diagram-next"></i></div>
+                        <span class="case-step-badge">Bez ręcznych obiegów</span>
+                        <h3 class="case-step-title">Zlecenie Techniczne</h3>
+                        <p class="case-step-desc">Automatyczne powstanie zadania bez ręcznego przepychania spraw między działami.</p>
+                    </div>
+
+                    <!-- Krok 4 -->
+                    <div class="case-step-card tile" data-step="4">
+                        <div class="case-step-num-badge">KROK 04</div>
+                        <div class="case-step-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                        <span class="case-step-badge">Sprawna realizacja</span>
+                        <h3 class="case-step-title">Mobilny FSM</h3>
+                        <p class="case-step-desc">Technik w terenie dostaje kompletny zestaw informacji w aplikacji.</p>
+                    </div>
+
+                    <!-- Krok 5 -->
+                    <div class="case-step-card tile" data-step="5">
+                        <div class="case-step-num-badge">KROK 05</div>
+                        <div class="case-step-icon"><i class="fa-solid fa-circle-check"></i></div>
+                        <span class="case-step-badge">Status dla abonenta</span>
+                        <h3 class="case-step-title">Status w eBOK</h3>
+                        <p class="case-step-desc">Status natychmiast wraca do klienta w eBOK bez angażowania BOK.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Prawa kolumna: Boczny wskaźnik postępu (5 kroków) -->
         <div class="case-step-indicator" id="caseStepIndicator">
             <div class="case-indicator-dot active" data-step="1" title="Krok 01: Zamówienie w App">1</div>
             <div class="case-indicator-dot" data-step="2" title="Krok 02: Kontekst Klienta">2</div>
             <div class="case-indicator-dot" data-step="3" title="Krok 03: Zlecenie Techniczne">3</div>
             <div class="case-indicator-dot" data-step="4" title="Krok 04: Mobilny FSM">4</div>
             <div class="case-indicator-dot" data-step="5" title="Krok 05: Status w eBOK">5</div>
-            <div class="case-indicator-dot" data-step="6" title="Podsumowanie Procesu"><i class="fa-solid fa-border-all"></i></div>
-        </div>
-
-        <!-- Pionowy tor z 5 kafelkami -->
-        <div class="case-study-flow case-v-track" id="caseVTrack">
-            <!-- Krok 1 -->
-            <div class="case-step-card tile tile-active" data-step="1">
-                <div class="case-step-num-badge">KROK 01</div>
-                <div class="case-step-icon"><i class="fa-solid fa-mobile-screen-button"></i></div>
-                <h3 class="case-step-title">Zamówienie w App</h3>
-                <p class="case-step-badge">Mniej infolinii</p>
-                <p class="case-step-desc">Abonent zamawia usługę w eBOK. <strong>Nie dzwoni na infolinię.</strong></p>
-            </div>
-
-            <!-- Krok 2 -->
-            <div class="case-step-card tile" data-step="2">
-                <div class="case-step-num-badge">KROK 02</div>
-                <div class="case-step-icon"><i class="fa-solid fa-folder-tree"></i></div>
-                <h3 class="case-step-title">Kontekst Klienta</h3>
-                <p class="case-step-badge">Jeden kontekst</p>
-                <p class="case-step-desc">Zamówienie trafia do BOK z pełną historią klienta, a nie jako osobny formularz.</p>
-            </div>
-
-            <!-- Krok 3 -->
-            <div class="case-step-card tile" data-step="3">
-                <div class="case-step-num-badge">KROK 03</div>
-                <div class="case-step-icon"><i class="fa-solid fa-diagram-next"></i></div>
-                <h3 class="case-step-title">Zlecenie Techniczne</h3>
-                <p class="case-step-badge">Bez ręcznych obiegów</p>
-                <p class="case-step-desc">Automatyczne powstanie zadania bez ręcznego przepychania spraw między działami.</p>
-            </div>
-
-            <!-- Krok 4 -->
-            <div class="case-step-card tile" data-step="4">
-                <div class="case-step-num-badge">KROK 04</div>
-                <div class="case-step-icon"><i class="fa-solid fa-truck-fast"></i></div>
-                <h3 class="case-step-title">Mobilny FSM</h3>
-                <p class="case-step-badge">Sprawna realizacja</p>
-                <p class="case-step-desc">Technik w terenie dostaje kompletny zestaw informacji w aplikacji.</p>
-            </div>
-
-            <!-- Krok 5 -->
-            <div class="case-step-card tile" data-step="5">
-                <div class="case-step-num-badge">KROK 05</div>
-                <div class="case-step-icon"><i class="fa-solid fa-circle-check"></i></div>
-                <h3 class="case-step-title">Status w eBOK</h3>
-                <p class="case-step-badge">Status dla abonenta</p>
-                <p class="case-step-desc">Status natychmiast wraca do klienta w eBOK bez angażowania BOK.</p>
-            </div>
-
-            <!-- Krok 6 (Trigger podsumowania procesowego) -->
-            <div class="case-summary-trigger tile" data-step="6" style="display:none;"></div>
-        </div>
-    </div>
-
-    <!-- Sekcja podsumowania (pojawia się w kroku 6) -->
-    <div class="case-summary-section" id="caseSummarySection">
-        <div class="system-flow-subline">
-            <span class="sys-step"><i class="fa-solid fa-mobile"></i> eBOK (Samoobsługa)</span>
-            <i class="fa-solid fa-arrow-right-long sys-arrow"></i>
-            <span class="sys-step"><i class="fa-solid fa-network-wired"></i> System Obsługi Operatora (BOK & Core)</span>
-            <i class="fa-solid fa-arrow-right-long sys-arrow"></i>
-            <span class="sys-step"><i class="fa-solid fa-screwdriver-wrench"></i> System Pracy Techników (FSM)</span>
-        </div>
-
-        <div class="case-study-summary">
-            <i class="fa-solid fa-lightbulb summary-icon"></i>
-            <p>Sens nie polega na tym, że sprawa przeszła przez 3 aplikacje. <strong>Sens polega na tym, że operator ograniczył ręczną obsługę, uporządkował dane, usprawnił teren i dał klientowi informację bez kontaktu z BOK.</strong></p>
         </div>
     </div>
 </div>
