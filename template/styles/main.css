@@ -2482,8 +2482,8 @@ body.light-theme [data-slide-id="slide_09"] .slide-title-question {
     text-wrap: balance;
 }
 
+/* Dedykowana powiększona interlinia wyłącznie dla Slajdu 24 (slide_11 / #slide16) */
 [data-slide-id="slide_11"] .slide-title-question,
-.strategic-question-slide .slide-title-question,
 #slide16 .slide-title-question {
     line-height: 1.75 !important;
     font-size: 3.4rem !important;
@@ -2492,8 +2492,7 @@ body.light-theme [data-slide-id="slide_09"] .slide-title-question {
     display: block !important;
 }
 
-.strategic-question-slide,
-.slide-container[data-slide-id="slide_11"],
+[data-slide-id="slide_11"],
 #slide16 {
     justify-content: center !important;
     align-items: center !important;
@@ -2504,7 +2503,6 @@ body.light-theme [data-slide-id="slide_09"] .slide-title-question {
 }
 
 [data-slide-id="slide_11"] .question-centered-box,
-.strategic-question-slide .question-centered-box,
 #slide16 .question-centered-box {
     margin: 0 auto !important;
     max-width: 1000px !important;
@@ -2513,8 +2511,8 @@ body.light-theme [data-slide-id="slide_09"] .slide-title-question {
 }
 
 [data-slide-id="slide_11"] .slide-title-question span,
-.strategic-question-slide .slide-title-question span,
 #slide16 .slide-title-question span {
+    line-height: 1.75 !important;
     text-align: center !important;
     display: block !important;
 }
