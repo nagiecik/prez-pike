@@ -1,21 +1,13 @@
 [
   {
-    "id": "1787210270954",
-    "slide": 8,
-    "x": 17.25,
-    "y": 19.06,
-    "author": "Gość",
-    "text": "bezszwowe - do zmiany",
-    "date": "20.08.2026"
-  },
-  {
     "id": "1787210294037",
     "slide": 8,
     "x": 30.95,
     "y": 31.86,
     "author": "Gość",
     "text": "dziwne zdanie",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_04_photo"
   },
   {
     "id": "1787210461569",
@@ -24,7 +16,8 @@
     "y": 73.82,
     "author": "Gość",
     "text": "dodac 2 inne statusy / alerty",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_06_photo"
   },
   {
     "id": "1787210783709",
@@ -33,7 +26,8 @@
     "y": 57.65,
     "author": "Gość",
     "text": "do sprawdzenia czy tak można to nazwać",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_08_last"
   },
   {
     "id": "1787210825992",
@@ -42,7 +36,8 @@
     "y": 52.17,
     "author": "Gość",
     "text": "dla nnie ten slajd jest ryzykowny, szczególnie odwołanie się do konkurencji - ale idea samego pytania jest słuszna",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_08_photo"
   },
   {
     "id": "1787210881891",
@@ -51,7 +46,8 @@
     "y": 29.84,
     "author": "Gość",
     "text": "jakie jest powiązanie tego slajdu z poprzednim",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_09"
   },
   {
     "id": "1787210914207",
@@ -60,7 +56,8 @@
     "y": 53.61,
     "author": "Gość",
     "text": "moze trzeba pokazac (wizualnie) gdzie jaki system jest w tym procesie",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_09_perspectives"
   },
   {
     "id": "1787210937840",
@@ -69,7 +66,8 @@
     "y": 70.16,
     "author": "Gość",
     "text": "za duzo wszystkiego",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_09_perspectives"
   },
   {
     "id": "1787210959540",
@@ -78,7 +76,8 @@
     "y": 34.65,
     "author": "Gość",
     "text": "kolejne podsumowanie - czy potrzebne?",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_10"
   },
   {
     "id": "1787210973090",
@@ -87,7 +86,8 @@
     "y": 59.77,
     "author": "Gość",
     "text": "usuwamy 3 buttony",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_11"
   },
   {
     "id": "1787210988473",
@@ -96,7 +96,8 @@
     "y": 49.86,
     "author": "Gość",
     "text": "zapraszamy do stoiska",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_11"
   },
   {
     "id": "1787211492100",
@@ -105,7 +106,8 @@
     "y": 33.11,
     "author": "Gość",
     "text": "Tu składnia nie gra",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_07_photo"
   },
   {
     "id": "1787211627231",
@@ -114,7 +116,8 @@
     "y": 27.74,
     "author": "Gość",
     "text": "Tu jakoś niefortunnie to zdanie złożone",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_08_last"
   },
   {
     "id": "1787211729671",
@@ -123,7 +126,8 @@
     "y": 65.53,
     "author": "Gość",
     "text": "Ten \"1\" chyba lepiej słownie",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_08_photo"
   },
   {
     "id": "1787212019163",
@@ -132,7 +136,8 @@
     "y": 53.42,
     "author": "Gość",
     "text": "Może jednak w aplikacji, nie w app",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_09_perspectives"
   },
   {
     "id": "1787212040956",
@@ -141,7 +146,8 @@
     "y": 61.99,
     "author": "Gość",
     "text": "Bez ręcznego obiegu",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_09_perspectives"
   },
   {
     "id": "1787216375181",
@@ -150,7 +156,8 @@
     "y": 41.19,
     "author": "Gość",
     "text": "Pomysł - dodać audio z inoflinii o kolejce",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_02_cascade"
   },
   {
     "id": "1787216841778",
@@ -159,6 +166,7 @@
     "y": 22.33,
     "author": "Gość",
     "text": "NIe wiemy jak dobrze opisac w tym miejscu idee - że technik ma wszystko co potrzebuje do pracy w aplikacji mobilnej",
-    "date": "20.08.2026"
+    "date": "20.08.2026",
+    "slideId": "slide_06"
   }
 ]
