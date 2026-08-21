@@ -386,14 +386,29 @@ document.addEventListener('DOMContentLoaded', () => {
             audioEl.className = 'slide-audio';
             audioEl.src = audioSrc;
             audioEl.preload = 'auto';
+            audioEl.loop = true;
+            audioEl.setAttribute('loop', '');
             slide.appendChild(audioEl);
         }
 
         if (audioEl && (audioEl.getAttribute('src') || audioEl.src)) {
+            audioEl.loop = true;
+            audioEl.setAttribute('loop', '');
             audioEl.muted = isAudioMuted;
             audioEl.volume = 1.0;
             currentActiveAudio = audioEl;
             audioEl.currentTime = 0;
+
+            if (!audioEl.dataset.loopBound) {
+                audioEl.dataset.loopBound = "true";
+                audioEl.addEventListener('ended', () => {
+                    if (currentActiveAudio === audioEl && currentSlide === slideIndex) {
+                        audioEl.currentTime = 0;
+                        audioEl.play().catch(e => console.log('[Slide Audio] Błąd ponownego odtwarzania w pętli:', e));
+                    }
+                });
+            }
+
             const playPromise = audioEl.play();
             if (playPromise !== undefined) {
                 playPromise.catch(err => {
